@@ -109,37 +109,47 @@ export class BackendAuthService {
    * Handle successful login
    */
   private handleLoginSuccess(response: LoginResponse): void {
-    // Calculate token expiration
-    const expiresAt = new Date(Date.now() + response.expiresIn * 1000);
+    this.configService.log('Login successful');
+
+    // Parse expiration date from backend
+    const expiresAt = new Date(response.expiresAt);
 
     // Store authentication data
-    this.storageService.set('auth_token', response.token);
+    this.storageService.set('auth_token', response.accessToken);
     if (response.refreshToken) {
       this.storageService.set('refresh_token', response.refreshToken);
     }
     this.storageService.set('token_expires_at', expiresAt);
 
-    // Fetch user claims and update state
-    this.getUserClaims().subscribe({
-      next: (user) => {
-        this.storageService.set('current_user', user);
-        this.updateAuthState(user, response.token, expiresAt);
-        this.configService.log('Login successful', { userId: user.id, userName: user.userName });
-      },
-      error: (error) => {
-        // If fetching claims fails, use basic user info from login response
-        const basicUser: AuthenticatedUser = {
-          id: response.userId,
-          userName: response.userName,
-          email: response.email || '',
-          roles: response.roles || [],
-          permissions: []
-        };
-        this.storageService.set('current_user', basicUser);
-        this.updateAuthState(basicUser, response.token, expiresAt);
-        this.configService.logWarning('Login successful but failed to fetch user claims', error);
-      }
-    });
+    // Decode token to get basic user info
+    const tokenPayload = this.decodeToken(response.accessToken);
+
+    // Create basic user object from token
+    const basicUser: AuthenticatedUser = {
+      id: tokenPayload?.sub || tokenPayload?.nameid || 'unknown',
+      userName: tokenPayload?.unique_name || tokenPayload?.name || 'User',
+      email: tokenPayload?.email || '',
+      roles: [],
+      permissions: []
+    };
+
+    // Store user and update auth state
+    this.storageService.set('current_user', basicUser);
+    this.updateAuthState(basicUser, response.accessToken, expiresAt);
+
+    // Fetch claims in background
+    setTimeout(() => {
+      this.getUserClaims().subscribe({
+        next: (user) => {
+          this.storageService.set('current_user', user);
+          this.currentUserSubject.next(user);
+          this.configService.log('User claims loaded', { permissions: user.permissions.length });
+        },
+        error: (error) => {
+          this.configService.logError('Failed to fetch user claims', error);
+        }
+      });
+    }, 300);
   }
 
   /**
@@ -180,8 +190,8 @@ export class BackendAuthService {
    */
   private extractRoles(claims: ClaimDto[]): string[] {
     return claims
-      .filter(claim => claim.type.includes('role') || claim.type.includes('Role'))
-      .map(claim => claim.value);
+      .filter(claim => claim.claimType && (claim.claimType.toLowerCase().includes('role')))
+      .map(claim => claim.id);
   }
 
   /**
@@ -283,12 +293,24 @@ export class BackendAuthService {
    */
   hasPermission(permission: string): boolean {
     const user = this.getCurrentUser();
-    if (!user || !user.permissions) return false;
+    if (!user || !user.permissions || !Array.isArray(user.permissions)) {
+      return false;
+    }
 
-    return user.permissions.some(p => 
-      p.value.toLowerCase() === permission.toLowerCase() ||
-      p.type.toLowerCase() === permission.toLowerCase()
-    );
+    // Check if user has IsSuperAdmin claim from token
+    const token = this.storageService.get<string>('auth_token');
+    if (token) {
+      const payload = this.decodeToken(token);
+      if (payload?.IsSuperAdmin === 'true') {
+        return true; // Super admin has ALL permissions
+      }
+    }
+
+    return user.permissions.some(p => {
+      if (!p || !p.id || !p.claimType) return false;
+      return p.id.toLowerCase() === permission.toLowerCase() ||
+             p.claimType.toLowerCase() === permission.toLowerCase();
+    });
   }
 
   /**

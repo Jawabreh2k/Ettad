@@ -31,8 +31,12 @@ export const API_ENDPOINTS = {
   // Role Management
   ROLES: {
     BASE: '/roles',
+    PAGINATED: '/roles/GetRolesWithPagination',
     BY_ID: (id: string) => `/roles/${id}`,
     PERMISSIONS: (id: string) => `/roles/${id}/permissions`,
+    CRUD_PERMISSIONS: (id: string) => `/roles/${id}/crud/permissions`,
+    ASSIGN_PERMISSIONS: '/roles/permissions',
+    USERS_IN_ROLE: (id: string) => `/roles/${id}/users`,
   },
   
   // Workflow Management

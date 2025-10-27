@@ -12,17 +12,12 @@ export interface LoginRequest {
 }
 
 /**
- * Login response from backend
+ * Login response from backend - matches C# AuthenticatedResponse
  */
 export interface LoginResponse {
-  token: string;
-  refreshToken?: string;
-  expiresIn: number;
-  userId: string;
-  userName: string;
-  email?: string;
-  roles?: string[];
-  permissions?: string[];
+  accessToken: string;
+  refreshToken: string;
+  expiresAt: string; // ISO date string from backend
 }
 
 /**
@@ -40,11 +35,12 @@ export interface AuthenticatedUser {
 }
 
 /**
- * User claims/permissions from backend
+ * User claims/permissions from backend - matches C# ClaimDto exactly
+ * Backend properties: Id (string), ClaimType (string)
  */
 export interface ClaimDto {
-  type: string;
-  value: string;
+  id: string;
+  claimType: string;
 }
 
 /**

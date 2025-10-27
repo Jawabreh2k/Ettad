@@ -1,0 +1,191 @@
+<div class="space-y-6">
+  <!-- Header -->
+  <div class="flex items-center justify-between">
+    <div>
+      <h1 class="text-2xl font-bold text-[var(--color-text)]">Role Permissions</h1>
+      <p class="text-sm text-[var(--color-text-muted)] mt-1">Manage permissions for each role</p>
+    </div>
+    <button
+      (click)="onRefresh()"
+      [disabled]="isLoading || !selectedRole"
+      class="inline-flex items-center gap-2 px-4 py-2.5 bg-[var(--color-accent)] text-white rounded-lg hover:bg-[var(--color-accent-dark)] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+    >
+      <lucide-angular [img]="RefreshCw" class="h-4 w-4"></lucide-angular>
+      Refresh
+    </button>
+  </div>
+
+  <!-- Stats Cards -->
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+    <app-card>
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-sm text-[var(--color-text-muted)]">Total Roles</p>
+          <p class="text-2xl font-bold text-[var(--color-text)]">{{ roles.length }}</p>
+        </div>
+        <lucide-angular [img]="Shield" class="h-8 w-8 text-[var(--color-accent)]"></lucide-angular>
+      </div>
+    </app-card>
+
+    <app-card>
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-sm text-[var(--color-text-muted)]">Selected Role</p>
+          <p class="text-2xl font-bold text-[var(--color-text)]">{{ selectedRole ? '1' : '0' }}</p>
+        </div>
+        <lucide-angular [img]="Settings" class="h-8 w-8 text-[var(--color-success)]"></lucide-angular>
+      </div>
+    </app-card>
+
+    <app-card>
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-sm text-[var(--color-text-muted)]">System Status</p>
+          <p class="text-2xl font-bold text-[var(--color-success)]">Active</p>
+        </div>
+        <lucide-angular [img]="Check" class="h-8 w-8 text-[var(--color-info)]"></lucide-angular>
+      </div>
+    </app-card>
+  </div>
+
+  <!-- Main Content -->
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <!-- Role Selection Card -->
+    <app-card title="Select Role" class="lg:col-span-1">
+      <div class="space-y-3">
+        <div
+          *ngFor="let role of roles"
+          (click)="onRoleSelect(role)"
+          [class]="'p-4 rounded-lg border-2 cursor-pointer transition-all ' + 
+            (selectedRole?.id === role.id 
+              ? 'border-[var(--color-accent)] bg-[var(--color-accent)]/10' 
+              : 'border-[var(--color-border)] hover:border-[var(--color-accent)]/50 hover:bg-[var(--color-background-hover)]')"
+        >
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-lg bg-[var(--color-accent)]/10 flex items-center justify-center">
+              <lucide-angular [img]="Shield" class="h-5 w-5 text-[var(--color-accent)]"></lucide-angular>
+            </div>
+            <div class="flex-1">
+              <h4 class="font-semibold text-[var(--color-text)]">{{ role.name }}</h4>
+              <div class="flex items-center gap-2 mt-1">
+                <span *ngIf="role.isSuperAdmin" class="px-2 py-0.5 bg-red-100 text-red-700 text-xs font-medium rounded">
+                  Super Admin
+                </span>
+                <span *ngIf="role.isDefaultRole" class="px-2 py-0.5 bg-blue-100 text-blue-700 text-xs font-medium rounded">
+                  Default
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </app-card>
+
+    <!-- Permissions Panel -->
+    <div class="lg:col-span-2">
+      <!-- No Role Selected State -->
+      <app-card *ngIf="!selectedRole">
+        <div class="text-center py-12">
+          <lucide-angular [img]="Shield" class="h-12 w-12 mx-auto text-[var(--color-text-muted)] mb-4"></lucide-angular>
+          <h3 class="text-lg font-semibold text-[var(--color-text)] mb-2">Select a Role</h3>
+          <p class="text-[var(--color-text-muted)]">Choose a role from the left panel to manage its permissions</p>
+        </div>
+      </app-card>
+
+      <!-- Role Selected State -->
+      <div *ngIf="selectedRole" class="space-y-6">
+        <!-- Role Header Card -->
+        <app-card>
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-4">
+              <div class="w-12 h-12 rounded-lg bg-[var(--color-accent)]/10 flex items-center justify-center">
+                <lucide-angular [img]="Shield" class="h-6 w-6 text-[var(--color-accent)]"></lucide-angular>
+              </div>
+              <div>
+                <h3 class="text-xl font-semibold text-[var(--color-text)]">{{ selectedRole.name }}</h3>
+                <p class="text-sm text-[var(--color-text-muted)]">Configure permissions for this role</p>
+              </div>
+            </div>
+            <button
+              (click)="onSavePermissions()"
+              [disabled]="isSaving || permissionForm.invalid"
+              class="inline-flex items-center gap-2 px-4 py-2.5 bg-[var(--color-brand)] text-white rounded-lg hover:bg-[var(--color-brand-dark)] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <lucide-angular [img]="Save" class="h-4 w-4"></lucide-angular>
+              {{ isSaving ? 'Saving...' : 'Save Permissions' }}
+            </button>
+          </div>
+        </app-card>
+
+        <!-- Messages -->
+        <div *ngIf="errorMessage" class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
+          {{ errorMessage }}
+        </div>
+        <div *ngIf="successMessage" class="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg">
+          {{ successMessage }}
+        </div>
+
+        <!-- Loading State -->
+        <app-card *ngIf="isLoading">
+          <div class="text-center py-12">
+            <lucide-angular [img]="RefreshCw" class="h-8 w-8 mx-auto text-[var(--color-accent)] mb-4 animate-spin"></lucide-angular>
+            <p class="text-[var(--color-text-muted)]">Loading permissions...</p>
+          </div>
+        </app-card>
+
+        <!-- Permissions Form -->
+        <form [formGroup]="permissionForm" *ngIf="!isLoading && selectedRole">
+          <!-- CRUD Permissions -->
+          <app-card *ngFor="let permission of permissions" [title]="permission.entityName">
+            <div class="mb-4">
+              <p class="text-sm text-[var(--color-text-muted)] mb-4">{{ permission.category }}</p>
+              <div class="flex items-center justify-between mb-4">
+                <span class="text-sm text-[var(--color-text-muted)]">
+                  {{ getSelectedPermissionsCount(permission.entityName) }}/{{ permission.permissionsList.length }} selected
+                </span>
+                <button
+                  type="button"
+                  (click)="onGroupToggle(permission.entityName, !isGroupFullySelected(permission.entityName))"
+                  class="px-3 py-1 text-sm font-medium text-[var(--color-accent)] hover:bg-[var(--color-accent)]/10 rounded-lg transition-colors"
+                >
+                  {{ isGroupFullySelected(permission.entityName) ? 'Deselect All' : 'Select All' }}
+                </button>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+              <label
+                *ngFor="let perm of permission.permissionsList"
+                class="flex items-center gap-3 p-3 rounded-lg border border-[var(--color-border)] hover:bg-[var(--color-background-hover)] cursor-pointer transition-all"
+              >
+                <input
+                  type="checkbox"
+                  [formControlName]="permission.entityName + '_' + perm.displayValue"
+                  class="h-4 w-4 rounded border-2 border-[var(--color-border)] text-[var(--color-accent)] focus:ring-2 focus:ring-[var(--color-accent)]/20"
+                />
+                <span class="text-sm font-medium text-[var(--color-text)]">{{ perm.displayValue }}</span>
+              </label>
+            </div>
+          </app-card>
+
+          <!-- Plain Permissions -->
+          <app-card *ngIf="plainPermissions.length > 0" title="General Permissions">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+              <label
+                *ngFor="let permission of plainPermissions"
+                class="flex items-center gap-3 p-3 rounded-lg border border-[var(--color-border)] hover:bg-[var(--color-background-hover)] cursor-pointer transition-all"
+              >
+                <input
+                  type="checkbox"
+                  [formControlName]="'plain_' + permission"
+                  class="h-4 w-4 rounded border-2 border-[var(--color-border)] text-[var(--color-accent)] focus:ring-2 focus:ring-[var(--color-accent)]/20"
+                />
+                <span class="text-sm font-medium text-[var(--color-text)]">{{ permission }}</span>
+              </label>
+            </div>
+          </app-card>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

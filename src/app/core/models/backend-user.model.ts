@@ -105,7 +105,30 @@ export interface PermissionDto {
  * Assign permissions to role DTO
  */
 export interface AssignPermissionsDto {
-  roleId: string;
-  permissionIds: string[];
+  entityId: string;
+  permissionsList: string[];
+}
+
+/**
+ * CRUD Permission structure
+ */
+export interface CrudPermission {
+  isForReportDesinger: boolean;
+  category: string;
+  entityName: string;
+  permissionsList: CheckBox[];
+}
+
+export interface CheckBox {
+  displayValue: string;
+  isChecked?: boolean;
+}
+
+/**
+ * User in role DTO
+ */
+export interface UserInRoleDto {
+  id: string;
+  userName: string;
 }
 

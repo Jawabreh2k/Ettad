@@ -4,9 +4,8 @@ import { Router } from '@angular/router';
 import { Subject, takeUntil } from 'rxjs';
 import { LucideAngularModule, Bell, User, Languages, LogOut, ChevronDown } from 'lucide-angular';
 import { TranslationService } from '@services/translation.service';
-import { AuthService } from '@services/auth.service';
-import { User as UserModel } from '@models/user.model';
-import { getFullName, getUserInitials } from '@models/user.model';
+import { BackendAuthService } from '@services/backend-auth.service';
+import { AuthenticatedUser } from '@models/auth.model';
 
 @Component({
   selector: 'app-navbar',
@@ -22,7 +21,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
   readonly LogOut = LogOut;
   readonly ChevronDown = ChevronDown;
 
-  currentUser: UserModel | null = null;
+  currentUser: AuthenticatedUser | null = null;
   showUserMenu = false;
   notificationCount = 3; // Mock notification count
 
@@ -31,7 +30,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
   constructor(
     private router: Router,
     public translationService: TranslationService,
-    private authService: AuthService
+    private authService: BackendAuthService
   ) {}
 
   ngOnInit(): void {
@@ -49,15 +48,21 @@ export class NavbarComponent implements OnInit, OnDestroy {
   }
 
   getUserFullName(): string {
-    return this.currentUser ? getFullName(this.currentUser) : 'User';
+    return this.currentUser?.userName || 'User';
   }
 
   getUserInitials(): string {
-    return this.currentUser ? getUserInitials(this.currentUser) : 'U';
+    if (!this.currentUser) return 'U';
+    const name = this.currentUser.userName;
+    const parts = name.split(' ');
+    if (parts.length >= 2) {
+      return (parts[0][0] + parts[1][0]).toUpperCase();
+    }
+    return name[0]?.toUpperCase() || 'U';
   }
 
   getUserRole(): string {
-    return this.currentUser?.role.name || 'User';
+    return this.currentUser?.roles?.[0] || 'User';
   }
 
   toggleUserMenu(): void {

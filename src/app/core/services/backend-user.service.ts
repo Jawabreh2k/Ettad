@@ -14,9 +14,11 @@ import {
   CreateRoleDto,
   UpdateRoleDto,
   PermissionDto,
-  AssignPermissionsDto
+  AssignPermissionsDto,
+  CrudPermission,
+  UserInRoleDto
 } from '@models/backend-user.model';
-import { ApiResponse, PagedResponse, PagedRequest } from '@models/api-response.model';
+import { ApiResponse, PagedResponse, PagedRequest, PaginatedList } from '@models/api-response.model';
 
 /**
  * Backend User Service
@@ -269,19 +271,25 @@ export class BackendUserService {
   }
 
   /**
-   * Get all roles (simple list)
+   * Get all roles using paginated endpoint
    */
   getRoles(): Observable<RoleDto[]> {
     this.configService.log('Fetching all roles');
 
-    return this.apiService.getWithAuth<ApiResponse<RoleDto[]>>(
-      API_ENDPOINTS.ROLES.BASE
+    const paginationRequest = {
+      page: 1,
+      pageSize: 1000
+    };
+
+    return this.apiService.postWithAuth<ApiResponse<PaginatedList<RoleDto>>>(
+      API_ENDPOINTS.ROLES.PAGINATED,
+      paginationRequest
     ).pipe(
       map(response => {
-        if (!response.succeeded) {
+        if (!response.succeeded || !response.data) {
           throw new Error(response.message || 'Failed to fetch roles');
         }
-        return response.data || [];
+        return response.data.items || [];
       }),
       tap(roles => {
         this.rolesSubject.next(roles);
@@ -440,29 +448,139 @@ export class BackendUserService {
     );
   }
 
-  /**
-   * Assign permissions to role
-   */
-  assignPermissions(dto: AssignPermissionsDto): Observable<boolean> {
-    this.configService.log('Assigning permissions to role', dto);
 
-    return this.apiService.postWithAuth<ApiResponse<any>>(
-      API_ENDPOINTS.ROLES.PERMISSIONS(dto.roleId),
-      dto
+  // ========================================
+  // PERMISSION MANAGEMENT
+  // ========================================
+
+  /**
+   * Get plain permissions for a role
+   */
+  getPlainPermissionsForRole(roleId: string): Observable<string[]> {
+    this.configService.log('Fetching plain permissions for role', { roleId });
+
+    return this.apiService.getWithAuth<ApiResponse<string[]>>(
+      API_ENDPOINTS.ROLES.PERMISSIONS(roleId)
+    ).pipe(
+      map(response => {
+        if (!response.succeeded) {
+          throw new Error(response.message || 'Failed to fetch permissions');
+        }
+        return response.data || [];
+      }),
+      catchError(error => {
+        this.configService.logError('Failed to fetch plain permissions', error);
+        return throwError(() => new Error(
+          error.userMessage || 'Failed to fetch permissions'
+        ));
+      })
+    );
+  }
+
+  /**
+   * Get CRUD permissions for a role
+   */
+  getCrudPermissionsForRole(roleId: string): Observable<CrudPermission[]> {
+    this.configService.log('Fetching CRUD permissions for role', { roleId });
+
+    return this.apiService.getWithAuth<ApiResponse<CrudPermission[]>>(
+      API_ENDPOINTS.ROLES.CRUD_PERMISSIONS(roleId)
+    ).pipe(
+      map(response => {
+        if (!response.succeeded) {
+          throw new Error(response.message || 'Failed to fetch CRUD permissions');
+        }
+        return response.data || [];
+      }),
+      catchError(error => {
+        this.configService.logError('Failed to fetch CRUD permissions', error);
+        return throwError(() => new Error(
+          error.userMessage || 'Failed to fetch CRUD permissions'
+        ));
+      })
+    );
+  }
+
+  /**
+   * Assign permissions to a role
+   */
+  assignPermissionsToRole(roleId: string, permissions: string[]): Observable<boolean> {
+    this.configService.log('Assigning permissions to role', { roleId, permissions });
+
+    const assignPermissionsDto: AssignPermissionsDto = {
+      entityId: roleId,
+      permissionsList: permissions
+    };
+
+    return this.apiService.postWithAuth<ApiResponse<boolean>>(
+      API_ENDPOINTS.ROLES.ASSIGN_PERMISSIONS,
+      assignPermissionsDto
     ).pipe(
       map(response => {
         if (!response.succeeded) {
           throw new Error(response.message || 'Failed to assign permissions');
         }
-        return true;
+        return response.data;
       }),
       tap(() => {
-        this.configService.log('Permissions assigned successfully', { roleId: dto.roleId });
+        this.configService.log('Permissions assigned successfully');
       }),
       catchError(error => {
         this.configService.logError('Failed to assign permissions', error);
         return throwError(() => new Error(
           error.userMessage || 'Failed to assign permissions'
+        ));
+      })
+    );
+  }
+
+  /**
+   * Get users in a role
+   */
+  getUsersInRole(roleId: string): Observable<UserInRoleDto[]> {
+    this.configService.log('Fetching users in role', { roleId });
+
+    return this.apiService.getWithAuth<ApiResponse<UserInRoleDto[]>>(
+      API_ENDPOINTS.ROLES.USERS_IN_ROLE(roleId)
+    ).pipe(
+      map(response => {
+        if (!response.succeeded) {
+          throw new Error(response.message || 'Failed to fetch users in role');
+        }
+        return response.data || [];
+      }),
+      catchError(error => {
+        this.configService.logError('Failed to fetch users in role', error);
+        return throwError(() => new Error(
+          error.userMessage || 'Failed to fetch users in role'
+        ));
+      })
+    );
+  }
+
+  /**
+   * Remove users from a role
+   */
+  removeUsersFromRole(roleId: string, userIds: string[]): Observable<boolean> {
+    this.configService.log('Removing users from role', { roleId, userIds });
+
+    return this.apiService.postWithAuth<ApiResponse<boolean>>(
+      API_ENDPOINTS.ROLES.USERS_IN_ROLE(roleId),
+      { userIds }
+    ).pipe(
+      map(response => {
+        if (!response.succeeded) {
+          throw new Error(response.message || 'Failed to remove users from role');
+        }
+        return response.data;
+      }),
+      tap(() => {
+        this.configService.log('Users removed from role successfully');
+      }),
+      catchError(error => {
+        this.configService.logError('Failed to remove users from role', error);
+        return throwError(() => new Error(
+          error.userMessage || 'Failed to remove users from role'
         ));
       })
     );

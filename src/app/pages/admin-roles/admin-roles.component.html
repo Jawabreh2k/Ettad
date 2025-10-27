@@ -2,52 +2,103 @@
   <!-- Header -->
   <div class="flex items-center justify-between">
     <div>
-      <h1 class="text-3xl font-bold text-[var(--color-text)]">Admin Roles</h1>
-      <p class="text-[var(--color-text-muted)] mt-1">Manage user roles and permissions</p>
+      <h1 class="text-2xl font-bold text-[var(--color-text)]">Role Management</h1>
+      <p class="text-sm text-[var(--color-text-muted)] mt-1">Manage roles and permissions</p>
     </div>
-    <app-button variant="primary" (clicked)="onAddRole()">
-      <lucide-angular [img]="Plus" class="h-4 w-4 mr-2"></lucide-angular>
+    <button
+      (click)="onAddRole()"
+      class="inline-flex items-center gap-2 px-4 py-2.5 bg-[var(--color-brand)] text-white rounded-lg hover:bg-[var(--color-brand-dark)] transition-colors"
+    >
+      <lucide-angular [img]="Plus" class="h-4 w-4"></lucide-angular>
       Add Role
-    </app-button>
+    </button>
   </div>
 
-  <!-- Role Summary -->
-  <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-    <app-card [shadow]="true">
+  <!-- Stats Cards -->
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+    <app-card>
       <div class="flex items-center justify-between">
         <div>
-          <p class="text-sm text-[var(--color-text-muted)] mb-1">Total Roles</p>
-          <p class="text-2xl font-bold text-[var(--color-text)]">{{ roles.length }}</p>
+          <p class="text-sm text-[var(--color-text-muted)]">Total Roles</p>
+          <p class="text-2xl font-bold text-[var(--color-text)]">{{ getTotalRoles() }}</p>
         </div>
-        <div class="p-3 rounded-lg bg-[var(--color-accent)]/10">
-          <lucide-angular [img]="Shield" class="h-6 w-6 text-[var(--color-accent)]"></lucide-angular>
-        </div>
+        <lucide-angular [img]="Shield" class="h-8 w-8 text-[var(--color-accent)]"></lucide-angular>
       </div>
     </app-card>
 
-    <app-card [shadow]="true">
+    <app-card>
       <div class="flex items-center justify-between">
         <div>
-          <p class="text-sm text-[var(--color-text-muted)] mb-1">Total Users</p>
-          <p class="text-2xl font-bold text-[var(--color-text)]">{{ getTotalUsers() }}</p>
-        </div>
-        <div class="p-3 rounded-lg bg-[var(--color-success)]/10">
-          <lucide-angular [img]="Users" class="h-6 w-6 text-[var(--color-success)]"></lucide-angular>
-        </div>
-      </div>
-    </app-card>
-
-    <app-card [shadow]="true">
-      <div class="flex items-center justify-between">
-        <div>
-          <p class="text-sm text-[var(--color-text-muted)] mb-1">Active Roles</p>
+          <p class="text-sm text-[var(--color-text-muted)]">Active Roles</p>
           <p class="text-2xl font-bold text-[var(--color-text)]">{{ getActiveRolesCount() }}</p>
         </div>
-        <div class="p-3 rounded-lg bg-[var(--color-brand)]/10">
-          <lucide-angular [img]="Settings" class="h-6 w-6 text-[var(--color-brand)]"></lucide-angular>
+        <lucide-angular [img]="Check" class="h-8 w-8 text-[var(--color-success)]"></lucide-angular>
+      </div>
+    </app-card>
+
+    <app-card>
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-sm text-[var(--color-text-muted)]">System Status</p>
+          <p class="text-2xl font-bold text-[var(--color-success)]">Operational</p>
+        </div>
+        <lucide-angular [img]="Settings" class="h-8 w-8 text-[var(--color-info)]"></lucide-angular>
+      </div>
+    </app-card>
+  </div>
+
+  <!-- Roles Grid -->
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+    <app-card *ngFor="let role of roles">
+      <div class="space-y-4">
+        <!-- Role Header -->
+        <div class="flex items-start justify-between">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-lg bg-[var(--color-accent)]/10 flex items-center justify-center">
+              <lucide-angular [img]="Shield" class="h-5 w-5 text-[var(--color-accent)]"></lucide-angular>
+            </div>
+            <div>
+              <h3 class="font-semibold text-[var(--color-text)]">{{ role.name }}</h3>
+              <div class="flex items-center gap-2 mt-1">
+                <span *ngIf="role.isSuperAdmin" class="px-2 py-0.5 bg-red-100 text-red-700 text-xs font-medium rounded">
+                  Super Admin
+                </span>
+                <span *ngIf="role.isDefaultRole" class="px-2 py-0.5 bg-blue-100 text-blue-700 text-xs font-medium rounded">
+                  Default
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="flex items-center gap-2 pt-4 border-t border-[var(--color-border)]">
+          <button
+            (click)="onEditRole(role)"
+            class="flex-1 px-3 py-2 text-sm font-medium text-[var(--color-accent)] hover:bg-[var(--color-accent)]/10 rounded-lg transition-colors"
+          >
+            <lucide-angular [img]="Edit" class="h-4 w-4 inline mr-1"></lucide-angular>
+            Edit
+          </button>
+          <button
+            (click)="onDeleteRole(role)"
+            [disabled]="role.isDefaultRole"
+            [class.opacity-50]="role.isDefaultRole"
+            [class.cursor-not-allowed]="role.isDefaultRole"
+            class="flex-1 px-3 py-2 text-sm font-medium text-[var(--color-error)] hover:bg-[var(--color-error)]/10 rounded-lg transition-colors disabled:hover:bg-transparent"
+          >
+            <lucide-angular [img]="Trash2" class="h-4 w-4 inline mr-1"></lucide-angular>
+            Delete
+          </button>
         </div>
       </div>
     </app-card>
+  </div>
+
+  <!-- Empty State -->
+  <div *ngIf="roles.length === 0 && !isLoading" class="text-center py-12">
+    <lucide-angular [img]="Shield" class="h-12 w-12 mx-auto text-[var(--color-text-muted)] mb-4"></lucide-angular>
+    <p class="text-[var(--color-text-muted)]">No roles found</p>
   </div>
 
   <!-- Loading State -->
@@ -55,120 +106,28 @@
     <p class="text-[var(--color-text-muted)]">Loading roles...</p>
   </div>
 
-  <!-- Roles List -->
-  <div *ngIf="!isLoading" class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-    <div *ngFor="let role of roles" class="bg-white rounded-lg border border-[var(--color-border)] shadow-custom-md p-6">
-      <!-- Role Header -->
-      <div class="flex items-center justify-between mb-4">
-        <div class="flex items-center gap-3">
-          <div class="p-2 rounded-lg bg-[var(--color-background-hover)]">
-            <lucide-angular [img]="Shield" class="h-5 w-5 text-[var(--color-accent)]"></lucide-angular>
-          </div>
-          <div>
-            <h3 class="font-semibold text-[var(--color-text)]">{{ role.name }}</h3>
-            <p class="text-sm text-[var(--color-text-muted)]">{{ role.userCount }} users</p>
-          </div>
-        </div>
-        <div class="flex items-center gap-2">
-          <span *ngIf="role.isDefault" class="px-2 py-1 bg-[var(--color-brand)] text-white text-xs rounded-full">Default</span>
-          <span *ngIf="!role.isActive" class="px-2 py-1 bg-[var(--color-text-muted)] text-white text-xs rounded-full flex items-center gap-1">
-            <lucide-angular [img]="X" class="h-3 w-3"></lucide-angular>
-            Inactive
-          </span>
-          <span class="px-2 py-1 rounded-full text-xs font-medium {{ getRoleTypeColor(role.roleType) }} text-white">
-            {{ getRoleTypeLabel(role.roleType) }}
-          </span>
-        </div>
-      </div>
-
-      <!-- Role Description -->
-      <p class="text-sm text-[var(--color-text-muted)] mb-4">{{ role.description }}</p>
-
-      <!-- Permissions -->
-      <div class="mb-4">
-        <h4 class="text-sm font-medium text-[var(--color-text)] mb-2">
-          Permissions ({{ role.permissions.length }})
-        </h4>
-        <div class="flex flex-wrap gap-2 max-h-24 overflow-y-auto">
-          <span 
-            *ngFor="let permission of role.permissions.slice(0, 5)" 
-            class="flex items-center gap-1 px-2 py-1 bg-[var(--color-background-hover)] text-xs rounded"
-            [title]="permission.description"
-          >
-            <lucide-angular [img]="Check" class="h-3 w-3 text-[var(--color-success)]"></lucide-angular>
-            {{ permission.displayName }}
-          </span>
-          <span 
-            *ngIf="role.permissions.length > 5" 
-            class="px-2 py-1 bg-[var(--color-background-hover)] text-xs rounded text-[var(--color-text-muted)]"
-          >
-            +{{ role.permissions.length - 5 }} more
-          </span>
-        </div>
-      </div>
-
-      <!-- Actions -->
-      <div class="flex justify-end gap-2 pt-4 border-t border-[var(--color-border)]">
-        <button
-          (click)="onDuplicate(role)"
-          class="p-2 rounded-lg hover:bg-[var(--color-background-hover)] transition-colors"
-          title="Duplicate Role"
-        >
-          <lucide-angular [img]="Copy" class="h-4 w-4 text-[var(--color-text-muted)]"></lucide-angular>
-        </button>
-        <button
-          (click)="onEdit(role)"
-          class="p-2 rounded-lg hover:bg-[var(--color-background-hover)] transition-colors"
-          title="Edit Role"
-        >
-          <lucide-angular [img]="Edit" class="h-4 w-4 text-[var(--color-accent)]"></lucide-angular>
-        </button>
-        <button
-          (click)="onDelete(role)"
-          class="p-2 rounded-lg hover:bg-[var(--color-background-hover)] transition-colors"
-          title="Delete Role"
-          [disabled]="role.isDefault"
-          [class.opacity-50]="role.isDefault"
-          [class.cursor-not-allowed]="role.isDefault"
-        >
-          <lucide-angular [img]="Trash2" class="h-4 w-4 text-[var(--color-error)]"></lucide-angular>
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Empty State -->
-  <div *ngIf="!isLoading && roles.length === 0" class="text-center py-12">
-    <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-[var(--color-background-hover)] mb-4">
-      <lucide-angular [img]="Shield" class="h-8 w-8 text-[var(--color-text-muted)]"></lucide-angular>
-    </div>
-    <h3 class="text-lg font-medium text-[var(--color-text)] mb-2">No Roles Found</h3>
-    <p class="text-sm text-[var(--color-text-muted)] mb-4">Get started by creating your first role</p>
-    <app-button variant="primary" (clicked)="onAddRole()">
-      <lucide-angular [img]="Plus" class="h-4 w-4 mr-2"></lucide-angular>
-      Create Role
-    </app-button>
+  <!-- Error Message -->
+  <div *ngIf="errorMessage" class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-4">
+    {{ errorMessage }}
   </div>
 </div>
 
 <!-- Role Form Modal -->
 <app-role-form-modal
   [isOpen]="showRoleModal"
-  [mode]="roleModalMode"
   [role]="selectedRole"
+  [mode]="roleModalMode"
   (closed)="showRoleModal = false"
-  (saved)="onRoleSaved($event)"
-></app-role-form-modal>
+  (saved)="onRoleSaved()"
+/>
 
-<!-- Delete Confirmation Dialog -->
+<!-- Delete Confirmation -->
 <app-confirm-dialog
   [isOpen]="showDeleteConfirm"
   title="Delete Role"
-  [message]="'Are you sure you want to delete ' + selectedRole?.name + '?'"
-  description="This action cannot be undone. Users with this role will lose their assigned permissions."
+  [message]="'Are you sure you want to delete ' + (selectedRole?.name || 'this role') + '?'"
   confirmText="Delete"
-  cancelText="Cancel"
-  confirmVariant="danger"
+  confirmColor="error"
   (confirmed)="confirmDelete()"
-  (cancelled)="showDeleteConfirm = false; selectedRole = undefined"
-></app-confirm-dialog>
+  (cancelled)="showDeleteConfirm = false"
+/>

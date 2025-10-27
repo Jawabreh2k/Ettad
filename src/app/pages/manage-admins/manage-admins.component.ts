@@ -7,8 +7,7 @@ import { ButtonComponent } from '@components/button/button.component';
 import { UserFormModalComponent } from '@components/user-form-modal/user-form-modal.component';
 import { ConfirmDialogComponent } from '@components/confirm-dialog/confirm-dialog.component';
 import { LucideAngularModule, UserPlus, Search, Edit, Trash2, Shield, Mail, User as UserIcon, Power } from 'lucide-angular';
-import { User, UserStatus, getFullName, getUserInitials } from '@models/user.model';
-import { Role, RoleType } from '@models/role.model';
+import { BackendUserDto, RoleDto } from '@models/backend-user.model';
 import { BackendUserService } from '@services/backend-user.service';
 
 @Component({
@@ -36,19 +35,19 @@ export class ManageAdminsComponent implements OnInit, OnDestroy {
   readonly UserIcon = UserIcon;
   readonly Power = Power;
 
-  users: User[] = [];
-  roles: Role[] = [];
+  users: BackendUserDto[] = [];
+  roles: RoleDto[] = [];
   isLoading = false;
+  errorMessage = '';
   
   searchTerm = '';
   selectedRoleId = '';
-  selectedStatus: UserStatus | '' = '';
 
   // Modal states
   showUserModal = false;
   showDeleteConfirm = false;
   userModalMode: 'create' | 'edit' = 'create';
-  selectedUser?: User;
+  selectedUser?: BackendUserDto;
 
   private destroy$ = new Subject<void>();
 
@@ -60,12 +59,10 @@ export class ManageAdminsComponent implements OnInit, OnDestroy {
     this.loadUsers();
     this.loadRoles();
     
-    // Subscribe to user changes
     this.backendUserService.users$
       .pipe(takeUntil(this.destroy$))
       .subscribe(users => {
-        // Convert BackendUserDto to User model for display
-        this.users = this.convertBackendUsersToDisplayUsers(users);
+        this.users = users;
       });
   }
 
@@ -78,12 +75,12 @@ export class ManageAdminsComponent implements OnInit, OnDestroy {
     this.isLoading = true;
     this.backendUserService.getUsers().subscribe({
       next: (users) => {
-        this.users = this.convertBackendUsersToDisplayUsers(users);
+        this.users = users;
         this.isLoading = false;
       },
       error: (error) => {
         this.isLoading = false;
-        console.error('Failed to load users:', error);
+        this.errorMessage = 'Failed to load users: ' + (error.message || 'Unknown error');
       }
     });
   }
@@ -91,33 +88,29 @@ export class ManageAdminsComponent implements OnInit, OnDestroy {
   loadRoles(): void {
     this.backendUserService.getRoles().subscribe({
       next: (roles) => {
-        this.roles = this.convertBackendRolesToDisplayRoles(roles);
+        this.roles = roles;
       },
       error: (error) => {
-        console.error('Failed to load roles:', error);
+        this.errorMessage = 'Failed to load roles: ' + (error.message || 'Unknown error');
       }
     });
   }
 
-  get filteredUsers(): User[] {
+  get filteredUsers(): BackendUserDto[] {
     return this.users.filter(user => {
-      const fullName = getFullName(user);
-      const matchesSearch = fullName.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
-                           user.email.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
-                           user.department?.toLowerCase().includes(this.searchTerm.toLowerCase() || '');
-      const matchesRole = !this.selectedRoleId || user.role.id === this.selectedRoleId;
-      const matchesStatus = !this.selectedStatus || user.status === this.selectedStatus;
-
-      return matchesSearch && matchesRole && matchesStatus;
+      const matchesSearch = user.userName.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
+                           user.email.toLowerCase().includes(this.searchTerm.toLowerCase());
+      return matchesSearch;
     });
   }
 
-  getFullName(user: User): string {
-    return getFullName(user);
+  getUserName(user: BackendUserDto): string {
+    return user.userName || user.email;
   }
 
-  getUserInitials(user: User): string {
-    return getUserInitials(user);
+  getUserInitials(user: BackendUserDto): string {
+    const name = user.userName || user.email;
+    return name.substring(0, 2).toUpperCase();
   }
 
   onAddUser(): void {
@@ -126,13 +119,13 @@ export class ManageAdminsComponent implements OnInit, OnDestroy {
     this.showUserModal = true;
   }
 
-  onEdit(user: User): void {
+  onEdit(user: BackendUserDto): void {
     this.userModalMode = 'edit';
     this.selectedUser = user;
     this.showUserModal = true;
   }
 
-  onDelete(user: User): void {
+  onDelete(user: BackendUserDto): void {
     this.selectedUser = user;
     this.showDeleteConfirm = true;
   }
@@ -148,42 +141,14 @@ export class ManageAdminsComponent implements OnInit, OnDestroy {
           }
         },
         error: (error) => {
-          alert(error.message || 'Failed to delete user');
+          this.errorMessage = error.message || 'Failed to delete user';
         }
       });
     }
   }
 
-  onToggleStatus(user: User): void {
-    // Note: Backend doesn't have toggle status, would need to implement
-    // For now, just reload users
+  onUserSaved(): void {
     this.loadUsers();
-  }
-
-  onUserSaved(user: User): void {
-    this.loadUsers();
-  }
-
-  getStatusColor(status: UserStatus): string {
-    switch (status) {
-      case UserStatus.ACTIVE: return 'bg-[var(--color-success)]';
-      case UserStatus.INACTIVE: return 'bg-[var(--color-text-muted)]';
-      case UserStatus.PENDING: return 'bg-[var(--color-warning)]';
-      case UserStatus.SUSPENDED: return 'bg-[var(--color-error)]';
-      default: return 'bg-[var(--color-text-muted)]';
-    }
-  }
-
-  getRoleTypeColor(roleType: RoleType): string {
-    switch (roleType) {
-      case RoleType.SUPER_ADMIN: return 'bg-[var(--color-error)]';
-      case RoleType.ADMIN: return 'bg-[var(--color-accent)]';
-      case RoleType.MANAGER: return 'bg-[var(--color-success)]';
-      case RoleType.MODERATOR: return 'bg-[var(--color-warning)]';
-      case RoleType.USER: return 'bg-[var(--color-info)]';
-      case RoleType.VIEWER: return 'bg-[var(--color-text-muted)]';
-      default: return 'bg-[var(--color-text-muted)]';
-    }
   }
 
   formatDate(date: Date | undefined): string {
@@ -191,64 +156,31 @@ export class ManageAdminsComponent implements OnInit, OnDestroy {
     return new Date(date).toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
+      day: 'numeric'
     });
   }
 
+  getTotalUsers(): number {
+    return this.users.length;
+  }
+
   getTotalActiveUsers(): number {
-    return this.users.filter(u => u.status === UserStatus.ACTIVE).length;
+    return this.users.length;
   }
 
   getTotalInactiveUsers(): number {
-    return this.users.filter(u => u.status === UserStatus.INACTIVE).length;
+    return 0;
   }
 
-  /**
-   * Convert BackendUserDto to User model for display
-   */
-  private convertBackendUsersToDisplayUsers(backendUsers: any[]): User[] {
-    return backendUsers.map(backendUser => ({
-      id: backendUser.id,
-      firstName: backendUser.userName.split('.')[0] || backendUser.userName,
-      lastName: backendUser.userName.split('.')[1] || '',
-      email: backendUser.email,
-      phone: '',
-      role: {
-        id: '1',
-        name: 'User',
-        description: 'Standard user',
-        roleType: 'user' as any,
-        userCount: 0,
-        permissions: [],
-        isActive: true,
-        isDefault: true,
-        createdAt: new Date(),
-        updatedAt: new Date()
-      },
-      department: 'IT',
-      status: UserStatus.ACTIVE,
-      createdAt: new Date(),
-      updatedAt: new Date()
-    }));
+  getFullName(user: BackendUserDto): string {
+    return user.userName || user.email;
   }
 
-  /**
-   * Convert BackendRoleDto to Role model for display
-   */
-  private convertBackendRolesToDisplayRoles(backendRoles: any[]): Role[] {
-    return backendRoles.map(backendRole => ({
-      id: backendRole.id,
-      name: backendRole.name,
-      description: backendRole.isSuperAdmin ? 'Super Administrator' : 'Standard Role',
-      roleType: backendRole.isSuperAdmin ? 'super_admin' : 'user' as any,
-      userCount: 0,
-      permissions: [],
-      isActive: true,
-      isDefault: backendRole.isDefaultRole,
-      createdAt: new Date(),
-      updatedAt: new Date()
-    }));
+  getStatusColor(): string {
+    return 'bg-[var(--color-success)]';
+  }
+
+  getRoleTypeColor(): string {
+    return 'bg-[var(--color-accent)]';
   }
 }

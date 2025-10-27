@@ -3,9 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
-import { LucideAngularModule, Eye, EyeOff, Lock, Mail, AlertCircle, CheckCircle } from 'lucide-angular';
-import { ButtonComponent } from '../../../shared/components/button/button.component';
-import { CardComponent } from '../../../shared/components/card/card.component';
+import { LucideAngularModule, Eye, EyeOff, Lock, Mail, AlertCircle } from 'lucide-angular';
 import { BackendAuthService } from '@services/backend-auth.service';
 
 interface LoginForm {
@@ -21,9 +19,7 @@ interface LoginForm {
     CommonModule,
     ReactiveFormsModule,
     TranslateModule,
-    LucideAngularModule,
-    ButtonComponent,
-    CardComponent
+    LucideAngularModule
   ],
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css']
@@ -34,21 +30,11 @@ export class LoginComponent implements OnInit {
   readonly Lock = Lock;
   readonly Mail = Mail;
   readonly AlertCircle = AlertCircle;
-  readonly CheckCircle = CheckCircle;
 
   loginForm: FormGroup;
   showPassword = false;
   isLoading = false;
   loginError = '';
-  showTestAccounts = false;
-
-  // Test accounts for easy login
-  testAccounts = [
-    { email: 'admin@barzan.com', role: 'Super Admin', password: 'admin123' },
-    { email: 'manager@barzan.com', role: 'Asset Manager', password: 'manager123' },
-    { email: 'user@barzan.com', role: 'User', password: 'user123' },
-    { email: 'viewer@barzan.com', role: 'Viewer', password: 'viewer123' }
-  ];
 
   constructor(
     private fb: FormBuilder,
@@ -86,18 +72,6 @@ export class LoginComponent implements OnInit {
     this.showPassword = !this.showPassword;
   }
 
-  toggleTestAccounts(): void {
-    this.showTestAccounts = !this.showTestAccounts;
-  }
-
-  /**
-   * Quick login with test account
-   */
-  quickLogin(email: string, password: string): void {
-    this.loginForm.patchValue({ email, password });
-    this.onSubmit();
-  }
-
   onSubmit(): void {
     if (this.loginForm.invalid) {
       this.markFormGroupTouched();
@@ -109,7 +83,6 @@ export class LoginComponent implements OnInit {
 
     const formValue = this.loginForm.value as LoginForm;
 
-    // Call BackendAuthService login
     this.backendAuth.login({
       username: formValue.email,
       password: formValue.password
@@ -127,7 +100,7 @@ export class LoginComponent implements OnInit {
         // Navigate to dashboard
         setTimeout(() => {
           this.router.navigate(['/dashboard']);
-        }, 500);
+        }, 400);
       },
       error: (error) => {
         this.isLoading = false;

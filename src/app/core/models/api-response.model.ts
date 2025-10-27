@@ -29,6 +29,18 @@ export interface PagedResponse<T> {
 }
 
 /**
+ * Backend PaginatedList structure
+ */
+export interface PaginatedList<T> {
+  items: T[];
+  pageIndex: number;
+  totalPages: number;
+  totalCount: number;
+  hasPreviousPage: boolean;
+  hasNextPage: boolean;
+}
+
+/**
  * Pagination request parameters
  */
 export interface PagedRequest {

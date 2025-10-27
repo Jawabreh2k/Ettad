@@ -3,8 +3,8 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 import { Subject, takeUntil } from 'rxjs';
-import { LucideAngularModule, LayoutDashboard, Users, ChevronLeft, ChevronRight, List, Shield, Search, FileText, Plus, TrendingUp, File, RotateCcw } from 'lucide-angular';
-import { AuthService } from '@services/auth.service';
+import { LucideAngularModule, LayoutDashboard, Users, ChevronLeft, ChevronRight, List, Shield, Search, FileText, Plus, TrendingUp, File, RotateCcw, Settings } from 'lucide-angular';
+import { BackendAuthService } from '@services/backend-auth.service';
 
 interface MenuItem {
   label: string;
@@ -102,12 +102,18 @@ export class SidebarComponent implements OnInit, OnDestroy {
       icon: Shield,
       route: '/admin-roles',
       permissions: ['role.view']
+    },
+    {
+      label: 'nav.rolePermissions',
+      icon: Settings,
+      route: '/role-permissions',
+      permissions: ['role.edit']
     }
   ];
 
   menuItems: MenuItem[] = [];
 
-  constructor(private authService: AuthService) {}
+  constructor(private authService: BackendAuthService) {}
 
   ngOnInit(): void {
     // Subscribe to user changes and filter menu items
@@ -130,25 +136,27 @@ export class SidebarComponent implements OnInit, OnDestroy {
    * Filter menu items based on user permissions
    */
   private filterMenuItems(): void {
+    const user = this.authService.getCurrentUser();
+    const hasPermissionsLoaded = user && user.permissions && user.permissions.length > 0;
+    
     this.menuItems = this.allMenuItems.filter(item => {
-      // Always show items without permission requirements
       if (!item.permissions || item.permissions.length === 0) {
         return true;
       }
 
-      // Check if user has required permissions
-      if (item.requireAll) {
-        return this.authService.hasAllPermissions(item.permissions);
-      } else {
-        return this.authService.hasAnyPermission(item.permissions);
+      if (!hasPermissionsLoaded) {
+        return true;
       }
+
+      return item.requireAll
+        ? this.authService.hasAllPermissions(item.permissions)
+        : this.authService.hasAnyPermission(item.permissions);
     });
 
     // Remove headers that have no children
     this.menuItems = this.menuItems.filter((item, index) => {
       if (!item.isHeader) return true;
       
-      // Check if next item exists and is not a header
       const nextItem = this.menuItems[index + 1];
       return nextItem && !nextItem.isHeader;
     });

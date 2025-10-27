@@ -6,8 +6,8 @@ import { ButtonComponent } from '@components/button/button.component';
 import { RoleFormModalComponent } from '@components/role-form-modal/role-form-modal.component';
 import { ConfirmDialogComponent } from '@components/confirm-dialog/confirm-dialog.component';
 import { LucideAngularModule, Shield, Plus, Edit, Trash2, Users, Settings, Copy, Check, X } from 'lucide-angular';
-import { Role, RoleType } from '@models/role.model';
-import { RoleService } from '@services/role.service';
+import { RoleDto } from '@models/backend-user.model';
+import { BackendUserService } from '@services/backend-user.service';
 
 @Component({
   selector: 'app-admin-roles',
@@ -34,26 +34,25 @@ export class AdminRolesComponent implements OnInit, OnDestroy {
   readonly Check = Check;
   readonly X = X;
 
-  roles: Role[] = [];
+  roles: RoleDto[] = [];
   isLoading = false;
+  errorMessage = '';
   
-  // Modal states
   showRoleModal = false;
   showDeleteConfirm = false;
   roleModalMode: 'create' | 'edit' = 'create';
-  selectedRole?: Role;
+  selectedRole?: RoleDto;
 
   private destroy$ = new Subject<void>();
 
-  constructor(private roleService: RoleService) {}
+  constructor(private backendUserService: BackendUserService) {}
 
   ngOnInit(): void {
     this.loadRoles();
     
-    // Subscribe to role changes
-    this.roleService.roles$
+    this.backendUserService.roles$
       .pipe(takeUntil(this.destroy$))
-      .subscribe(roles => {
+      .subscribe((roles: RoleDto[]) => {
         this.roles = roles;
       });
   }
@@ -65,14 +64,15 @@ export class AdminRolesComponent implements OnInit, OnDestroy {
 
   loadRoles(): void {
     this.isLoading = true;
-    this.roleService.getRoles().subscribe({
-      next: (roles) => {
+    this.backendUserService.getRoles().subscribe({
+      next: (roles: RoleDto[]) => {
         this.roles = roles;
         this.isLoading = false;
       },
-        error: (error) => {
-          this.isLoading = false;
-        }
+      error: (error: any) => {
+        this.isLoading = false;
+        this.errorMessage = 'Failed to load roles: ' + (error.message || 'Unknown error');
+      }
     });
   }
 
@@ -82,77 +82,56 @@ export class AdminRolesComponent implements OnInit, OnDestroy {
     this.showRoleModal = true;
   }
 
-  onEdit(role: Role): void {
+  onEditRole(role: RoleDto): void {
     this.roleModalMode = 'edit';
     this.selectedRole = role;
     this.showRoleModal = true;
   }
 
-  onDelete(role: Role): void {
+  onDeleteRole(role: RoleDto): void {
     this.selectedRole = role;
     this.showDeleteConfirm = true;
   }
 
   confirmDelete(): void {
     if (this.selectedRole) {
-      this.roleService.deleteRole(this.selectedRole.id).subscribe({
-        next: (success) => {
+      this.backendUserService.deleteRole(this.selectedRole.id).subscribe({
+        next: (success: boolean) => {
           if (success) {
             this.showDeleteConfirm = false;
             this.selectedRole = undefined;
             this.loadRoles();
           }
         },
-        error: (error) => {
-          alert(error.message || 'Failed to delete role');
+        error: (error: any) => {
+          this.errorMessage = error.message || 'Failed to delete role';
         }
       });
     }
   }
 
-  onDuplicate(role: Role): void {
-    this.roleService.duplicateRole(role.id).subscribe({
-      next: (duplicatedRole) => {
-        this.loadRoles();
-      },
-      error: (error) => {
-        console.error('Failed to duplicate role:', error);
-        alert(error.message || 'Failed to duplicate role');
-      }
-    });
-  }
-
-  onRoleSaved(role: Role): void {
+  onRoleSaved(): void {
     this.loadRoles();
   }
 
-  getRoleTypeColor(roleType: RoleType): string {
-    switch (roleType) {
-      case RoleType.SUPER_ADMIN: return 'bg-[var(--color-error)]';
-      case RoleType.ADMIN: return 'bg-[var(--color-accent)]';
-      case RoleType.MANAGER: return 'bg-[var(--color-success)]';
-      case RoleType.MODERATOR: return 'bg-[var(--color-warning)]';
-      case RoleType.USER: return 'bg-[var(--color-info)]';
-      case RoleType.VIEWER: return 'bg-[var(--color-text-muted)]';
-      default: return 'bg-[var(--color-text-muted)]';
-    }
+  formatDate(date: Date | undefined): string {
+    if (!date) return 'Never';
+    return new Date(date).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
+    });
   }
 
-  getRoleTypeLabel(roleType: RoleType): string {
-    return roleType.split('_').map(word => 
-      word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
-    ).join(' ');
+  getTotalRoles(): number {
+    return this.roles.length;
   }
 
   getTotalUsers(): number {
-    return this.roles.reduce((sum, role) => sum + role.userCount, 0);
-  }
-
-  getDefaultRolesCount(): number {
-    return this.roles.filter(r => r.isDefault).length;
+    return 0;
   }
 
   getActiveRolesCount(): number {
-    return this.roles.filter(r => r.isActive).length;
+    return this.roles.length;
   }
 }

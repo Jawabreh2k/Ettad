@@ -7,7 +7,7 @@ export const routes: Routes = [
   {
     path: '',
     component: MainLayoutComponent,
-    canActivate: [authGuard], // Protect all main routes
+    canActivate: [authGuard],
     children: [
       {
         path: '',
@@ -16,9 +16,7 @@ export const routes: Routes = [
       },
       {
         path: 'dashboard',
-        loadComponent: () => import('@pages/dashboard/dashboard.component').then(m => m.DashboardComponent),
-        canActivate: [permissionGuard],
-        data: { permissions: ['dashboard.view'] }
+        loadComponent: () => import('@pages/dashboard/dashboard.component').then(m => m.DashboardComponent)
       },
       {
         path: 'new-issue-request',
@@ -70,7 +68,11 @@ export const routes: Routes = [
       },
       {
         path: 'admin-roles',
-        loadComponent: () => import('@pages/admin-roles/admin-roles.component').then(m => m.AdminRolesComponent),
+        loadComponent: () => import('@pages/admin-roles/admin-roles.component').then(m => m.AdminRolesComponent)
+      },
+      {
+        path: 'role-permissions',
+        loadComponent: () => import('@pages/role-permissions/role-permissions.component').then(m => m.RolePermissionsComponent),
         canActivate: [permissionGuard],
         data: { permissions: ['role.view'] }
       },

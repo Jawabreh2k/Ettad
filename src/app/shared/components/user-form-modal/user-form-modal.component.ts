@@ -3,10 +3,8 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { ModalComponent } from '../modal/modal.component';
 import { ButtonComponent } from '../button/button.component';
-import { User, UserStatus, CreateUserDTO, UpdateUserDTO } from '@models/user.model';
-import { Role } from '@models/role.model';
-import { UserService } from '@services/user.service';
-import { RoleService } from '@services/role.service';
+import { BackendUserDto, RoleDto, CreateUserDto, UpdateUserDto } from '@models/backend-user.model';
+import { BackendUserService } from '@services/backend-user.service';
 
 @Component({
   selector: 'app-user-form-modal',
@@ -22,28 +20,20 @@ import { RoleService } from '@services/role.service';
 })
 export class UserFormModalComponent implements OnInit, OnChanges {
   @Input() isOpen = false;
-  @Input() user?: User;
+  @Input() user?: BackendUserDto;
   @Input() mode: 'create' | 'edit' = 'create';
   
   @Output() closed = new EventEmitter<void>();
-  @Output() saved = new EventEmitter<User>();
+  @Output() saved = new EventEmitter<void>();
 
   userForm!: FormGroup;
-  roles: Role[] = [];
+  roles: RoleDto[] = [];
   isLoading = false;
   errorMessage = '';
 
-  userStatuses = [
-    { value: UserStatus.ACTIVE, label: 'Active' },
-    { value: UserStatus.INACTIVE, label: 'Inactive' },
-    { value: UserStatus.PENDING, label: 'Pending' },
-    { value: UserStatus.SUSPENDED, label: 'Suspended' }
-  ];
-
   constructor(
     private fb: FormBuilder,
-    private userService: UserService,
-    private roleService: RoleService
+    private backendUserService: BackendUserService
   ) {
     this.initializeForm();
   }
@@ -64,37 +54,31 @@ export class UserFormModalComponent implements OnInit, OnChanges {
 
   private initializeForm(): void {
     this.userForm = this.fb.group({
-      firstName: [this.user?.firstName || '', [Validators.required, Validators.minLength(2)]],
-      lastName: [this.user?.lastName || '', [Validators.required, Validators.minLength(2)]],
-      email: [this.user?.email || '', [Validators.required, Validators.email]],
-      phone: [this.user?.phone || ''],
-      roleId: [this.user?.role.id || '', [Validators.required]],
-      department: [this.user?.department || ''],
-      status: [this.user?.status || UserStatus.ACTIVE, [Validators.required]]
+      userName: [this.user?.userName || '', [Validators.required, Validators.minLength(3)]],
+      organizationId: [this.user?.organizationId || 1],
+      isLdapUser: [this.user?.isLdapUser || false],
+      extraEmployeesView: [this.user?.extraEmployeesView || ''],
+      employeeId: [this.user?.employeeId || null]
     });
 
-    // Add password field only for create mode
     if (this.mode === 'create') {
       this.userForm.addControl('password', this.fb.control('', [Validators.required, Validators.minLength(6)]));
-      this.userForm.addControl('confirmPassword', this.fb.control('', [Validators.required]));
     }
   }
 
   private loadRoles(): void {
-    this.roleService.getRoles().subscribe(roles => {
-      this.roles = roles.filter(r => r.isActive);
+    this.backendUserService.getRoles().subscribe({
+      next: (roles: RoleDto[]) => {
+        this.roles = roles;
+      },
+      error: (error: any) => {
+        this.errorMessage = 'Failed to load roles';
+      }
     });
   }
 
   get title(): string {
-    return this.mode === 'create' ? 'Add New User' : `Edit User: ${this.user?.firstName} ${this.user?.lastName}`;
-  }
-
-  get passwordsMatch(): boolean {
-    if (this.mode === 'edit') return true;
-    const password = this.userForm.get('password')?.value;
-    const confirmPassword = this.userForm.get('confirmPassword')?.value;
-    return password === confirmPassword;
+    return this.mode === 'create' ? 'Add New User' : `Edit User: ${this.user?.userName}`;
   }
 
   onSubmit(): void {
@@ -103,41 +87,36 @@ export class UserFormModalComponent implements OnInit, OnChanges {
       return;
     }
 
-    if (this.mode === 'create' && !this.passwordsMatch) {
-      this.errorMessage = 'Passwords do not match';
-      return;
-    }
-
     this.isLoading = true;
     this.errorMessage = '';
 
     if (this.mode === 'create') {
-      const dto: CreateUserDTO = this.userForm.value;
+      const dto: CreateUserDto = this.userForm.value;
 
-      this.userService.createUser(dto).subscribe({
-        next: (user) => {
+      this.backendUserService.createUser(dto).subscribe({
+        next: (user: BackendUserDto) => {
           this.isLoading = false;
-          this.saved.emit(user);
+          this.saved.emit();
           this.close();
         },
-        error: (error) => {
+        error: (error: any) => {
           this.isLoading = false;
           this.errorMessage = error.message || 'Failed to create user';
         }
       });
     } else if (this.user) {
-      const dto: UpdateUserDTO = {
+      const dto: UpdateUserDto = {
         id: this.user.id,
         ...this.userForm.value
       };
 
-      this.userService.updateUser(dto).subscribe({
-        next: (user) => {
+      this.backendUserService.updateUser(this.user.id, dto).subscribe({
+        next: (user: BackendUserDto) => {
           this.isLoading = false;
-          this.saved.emit(user);
+          this.saved.emit();
           this.close();
         },
-        error: (error) => {
+        error: (error: any) => {
           this.isLoading = false;
           this.errorMessage = error.message || 'Failed to update user';
         }
