@@ -1,0 +1,111 @@
+<div *ngIf="cartridge" class="bg-white rounded-lg p-8 shadow-sm mb-6">
+  <h2 class="text-2xl font-bold text-[var(--color-text)] text-center mb-8">{{ 'newIssueRequest.reviewYourSelection' | translate }}</h2>
+  
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+    <!-- Left Side - Details -->
+    <div class="space-y-6">
+      <h3 class="text-xl font-bold text-[var(--color-text)] mb-4">{{ cartridge.name }}</h3>
+      
+      <!-- Primary Details -->
+      <div class="space-y-4">
+        <h4 class="text-base font-bold text-[var(--color-text)]">{{ 'newIssueRequest.primaryDetails' | translate }}</h4>
+        
+        <div class="grid grid-cols-2 gap-4 text-sm">
+          <div>
+            <p class="text-[var(--color-text-muted)] mb-1">{{ 'newIssueRequest.productName' | translate }}</p>
+            <p class="text-[var(--color-text)]">{{ cartridge.name }}</p>
+          </div>
+          
+          <div>
+            <p class="text-[var(--color-text-muted)] mb-1">{{ 'newIssueRequest.productId' | translate }}</p>
+            <p class="text-[var(--color-text)]">{{ cartridge.productId }}</p>
+          </div>
+          
+          <div>
+            <p class="text-[var(--color-text-muted)] mb-1">{{ 'newIssueRequest.ncn' | translate }}</p>
+            <p class="text-[var(--color-text)]">{{ cartridge.ncn }}</p>
+          </div>
+          
+          <div>
+            <p class="text-[var(--color-text-muted)] mb-1">{{ 'newIssueRequest.primaryPurpose' | translate }}</p>
+            <p class="text-[var(--color-text)]">{{ cartridge.primaryPurpose }}</p>
+          </div>
+          
+          <div class="col-span-2">
+            <p class="text-[var(--color-text-muted)] mb-1">{{ 'newIssueRequest.projectileColor' | translate }}</p>
+            <p class="text-[var(--color-text)]">{{ cartridge.projectileColor }}</p>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Caliber Specifications -->
+      <div class="space-y-4">
+        <h4 class="text-base font-bold text-[var(--color-text)]">{{ 'newIssueRequest.caliberSpecifications' | translate }}</h4>
+        
+        <div class="space-y-3 text-sm">
+          <div>
+            <p class="text-[var(--color-text-muted)] mb-1">{{ 'newIssueRequest.totalWeight' | translate }}</p>
+            <p class="text-[var(--color-text)]">{{ cartridge.totalWeight }}</p>
+          </div>
+          
+          <div>
+            <p class="text-[var(--color-text-muted)] mb-1">{{ 'newIssueRequest.projectileMaterial' | translate }}</p>
+            <p class="text-[var(--color-text)]">{{ cartridge.projectileMaterial }}</p>
+          </div>
+          
+          <div>
+            <p class="text-[var(--color-text-muted)] mb-1">{{ 'newIssueRequest.caseType' | translate }}</p>
+            <p class="text-[var(--color-text)]">{{ cartridge.caseType }}</p>
+          </div>
+          
+          <div>
+            <p class="text-[var(--color-text-muted)] mb-1">{{ 'newIssueRequest.primer' | translate }}</p>
+            <p class="text-[var(--color-text)]">{{ cartridge.primer }}</p>
+          </div>
+          
+          <div>
+            <p class="text-[var(--color-text-muted)] mb-1">{{ 'newIssueRequest.propellant' | translate }}</p>
+            <p class="text-[var(--color-text)]">{{ cartridge.propellant }}</p>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Classifications -->
+      <div class="space-y-4">
+        <h4 class="text-base font-bold text-[var(--color-text)]">{{ 'newIssueRequest.classifications' | translate }}</h4>
+        
+        <div class="grid grid-cols-2 gap-4 text-sm">
+          <div>
+            <p class="text-[var(--color-text-muted)] mb-1">{{ 'newIssueRequest.hazardDivision' | translate }}</p>
+            <p class="text-[var(--color-text)]">{{ cartridge.hazardDivision }}</p>
+          </div>
+          
+          <div>
+            <p class="text-[var(--color-text-muted)] mb-1">{{ 'newIssueRequest.capabilityGroup' | translate }}</p>
+            <p class="text-[var(--color-text)]">{{ cartridge.capabilityGroup }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Right Side - Image -->
+    <div class="flex items-center justify-center">
+      <img src="assets/image 5.png" alt="Cartridge" class="max-w-full h-auto">
+    </div>
+  </div>
+  
+  <!-- Action Buttons -->
+  <div class="flex justify-center gap-4 mt-8">
+    <button 
+      (click)="onCancel()"
+      class="px-8 py-3 border-2 border-[var(--color-border)] text-[var(--color-text)] text-sm font-medium rounded-lg hover:bg-[var(--color-background-hover)] transition-colors">
+      {{ 'common.cancel' | translate }}
+    </button>
+    <button 
+      (click)="onSelect()"
+      class="px-8 py-3 bg-[#D0B888] text-white text-sm font-medium rounded-lg hover:bg-[#BEA06E] transition-colors">
+      {{ 'newIssueRequest.sendRequest' | translate }}
+    </button>
+  </div>
+</div>
+

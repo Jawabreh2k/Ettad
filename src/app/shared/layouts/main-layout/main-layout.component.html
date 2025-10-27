@@ -1,0 +1,22 @@
+<div class="flex flex-col h-screen overflow-hidden bg-[var(--color-background-muted)]">
+  <!-- Navbar - Full Width at Top -->
+  <app-navbar></app-navbar>
+
+  <!-- Content Area with Sidebar -->
+  <div class="flex flex-1 overflow-hidden">
+    <!-- Sidebar -->
+    <app-sidebar (toggleSidebar)="onSidebarToggle($event)"></app-sidebar>
+
+    <!-- Main Content Area -->
+    <div class="flex flex-col flex-1 overflow-hidden">
+      <!-- Page Content -->
+      <main class="flex-1 overflow-y-auto p-6">
+        <router-outlet />
+      </main>
+
+      <!-- Footer -->
+      <app-footer></app-footer>
+    </div>
+  </div>
+</div>
+

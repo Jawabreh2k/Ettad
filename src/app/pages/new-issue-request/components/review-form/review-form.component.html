@@ -1,0 +1,149 @@
+<div class="space-y-6">
+  <!-- Requester Details -->
+  <div class="bg-[#F5F5F5] rounded-lg p-6">
+    <h2 class="text-base font-bold text-[var(--color-text)] mb-6">{{ 'newIssueRequest.requesterDetails' | translate }}</h2>
+    
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <!-- Name -->
+      <div class="flex items-center gap-4">
+        <label class="text-sm font-bold text-[var(--color-text)] min-w-[100px]">{{ 'newIssueRequest.name' | translate }}</label>
+        <input
+          type="text"
+          [ngModel]="requesterName"
+          (ngModelChange)="onRequesterNameChange($event)"
+          placeholder="Lt. Ahmed"
+          class="flex-1 px-4 py-2.5 border border-[var(--color-border)] rounded-lg text-sm text-[var(--color-text-muted)] bg-white focus:outline-none focus:ring-2 focus:ring-[#D0B888] focus:border-transparent">
+      </div>
+
+      <!-- Comments -->
+      <div class="flex items-center gap-4">
+        <label class="text-sm font-bold text-[var(--color-text)] min-w-[100px]">{{ 'newIssueRequest.comments' | translate }}</label>
+        <input
+          type="text"
+          [ngModel]="requesterComments"
+          (ngModelChange)="onRequesterCommentsChange($event)"
+          placeholder="None"
+          class="flex-1 px-4 py-2.5 border border-[var(--color-border)] rounded-lg text-sm text-[var(--color-text-muted)] bg-white focus:outline-none focus:ring-2 focus:ring-[#D0B888] focus:border-transparent">
+      </div>
+    </div>
+  </div>
+
+  <!-- Order Details -->
+  <div class="bg-[#F5F5F5] rounded-lg p-6">
+    <h2 class="text-base font-bold text-[var(--color-text)] mb-6">{{ 'newIssueRequest.orderDetails' | translate }}</h2>
+    
+    <div class="space-y-6">
+      <!-- Order Type -->
+      <div class="flex items-center gap-4">
+        <label class="text-sm font-bold text-[var(--color-text)] min-w-[150px]">{{ 'newIssueRequest.orderType' | translate }}</label>
+        <input
+          type="text"
+          [ngModel]="orderType"
+          (ngModelChange)="onOrderTypeChange($event)"
+          placeholder="New Issue Request"
+          class="flex-1 max-w-xs px-4 py-2.5 border border-[var(--color-border)] rounded-lg text-sm text-[var(--color-text-muted)] bg-white focus:outline-none focus:ring-2 focus:ring-[#D0B888] focus:border-transparent">
+      </div>
+
+      <!-- Order Priority -->
+      <div class="flex items-center gap-4">
+        <label class="text-sm font-bold text-[var(--color-text)] min-w-[150px]">{{ 'newIssueRequest.orderPriority' | translate }}</label>
+        <input
+          type="text"
+          [value]="selectedPriority"
+          placeholder="High Priority"
+          class="flex-1 max-w-xs px-4 py-2.5 border border-[var(--color-border)] rounded-lg text-sm text-[var(--color-text-muted)] bg-white focus:outline-none focus:ring-2 focus:ring-[#D0B888] focus:border-transparent">
+      </div>
+
+      <!-- Order Document -->
+      <div class="flex items-center gap-4">
+        <label class="text-sm font-bold text-[var(--color-text)] min-w-[150px]">{{ 'newIssueRequest.orderDocument' | translate }}</label>
+        <button class="px-6 py-2 bg-[#D0B888] text-white text-sm font-medium rounded-lg hover:bg-[#BEA06E] transition-colors">
+          {{ 'newIssueRequest.view' | translate }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Usage Details -->
+  <div class="bg-[#F5F5F5] rounded-lg p-6">
+    <h2 class="text-base font-bold text-[var(--color-text)] mb-6">{{ 'newIssueRequest.usageDetails' | translate }}</h2>
+    
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-6">
+      <!-- Left Column -->
+      <div class="space-y-6">
+        <!-- From Reserve -->
+        <div class="flex items-center">
+          <label class="text-sm font-bold text-[var(--color-text)] min-w-[120px]">{{ 'newIssueRequest.fromReserve' | translate }}</label>
+          <div class="flex gap-6 ml-4">
+            <label class="flex items-center cursor-pointer">
+              <div class="w-5 h-5 rounded-sm border-2 border-[var(--color-border)] flex items-center justify-center mr-2"
+                   [class.bg-[#D0B888]]="fromReserve === 'Yes'"
+                   [class.border-[#D0B888]]="fromReserve === 'Yes'">
+                <span *ngIf="fromReserve === 'Yes'" class="text-white text-xs">✓</span>
+              </div>
+              <input 
+                type="radio" 
+                name="fromReserveReview" 
+                value="Yes" 
+                [ngModel]="fromReserve"
+                (ngModelChange)="onFromReserveChange($event)"
+                class="sr-only">
+              <span class="text-sm text-[var(--color-text)]">{{ 'newIssueRequest.yes' | translate }}</span>
+            </label>
+            <label class="flex items-center cursor-pointer">
+              <div class="w-5 h-5 rounded-sm border-2 border-[var(--color-border)] flex items-center justify-center mr-2"
+                   [class.bg-[#D0B888]]="fromReserve === 'No'"
+                   [class.border-[#D0B888]]="fromReserve === 'No'">
+                <span *ngIf="fromReserve === 'No'" class="text-white text-xs">✓</span>
+              </div>
+              <input 
+                type="radio" 
+                name="fromReserveReview" 
+                value="No" 
+                [ngModel]="fromReserve"
+                (ngModelChange)="onFromReserveChange($event)"
+                class="sr-only">
+              <span class="text-sm text-[var(--color-text)]">{{ 'newIssueRequest.no' | translate }}</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Use purpose -->
+        <div class="flex items-center gap-4">
+          <label class="text-sm font-bold text-[var(--color-text)] min-w-[120px]">{{ 'newIssueRequest.usePurpose' | translate }}</label>
+          <input
+            type="text"
+            [ngModel]="usePurpose"
+            (ngModelChange)="onUsePurposeChange($event)"
+            placeholder="Training"
+            class="flex-1 px-4 py-2.5 border border-[var(--color-border)] rounded text-sm text-[var(--color-text-muted)] bg-white focus:outline-none focus:ring-2 focus:ring-[#D0B888] focus:border-transparent">
+        </div>
+      </div>
+
+      <!-- Right Column -->
+      <div class="space-y-6">
+        <!-- Usage Date -->
+        <div class="flex items-center gap-4">
+          <label class="text-sm font-bold text-[var(--color-text)] min-w-[120px]">{{ 'newIssueRequest.usageDate' | translate }}</label>
+          <input
+            type="text"
+            [ngModel]="usageDate"
+            (ngModelChange)="onUsageDateChange($event)"
+            placeholder="20/7/2025"
+            class="flex-1 px-4 py-2.5 border border-[var(--color-border)] rounded text-sm text-[var(--color-text-muted)] bg-white focus:outline-none focus:ring-2 focus:ring-[#D0B888] focus:border-transparent">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Navigation Buttons -->
+  <div class="flex justify-end items-center">
+    <app-button 
+      variant="primary" 
+      (clicked)="onNext()"
+      class="bg-[#D0B888] text-white hover:bg-[#BEA06E]">
+      {{ 'newIssueRequest.next' | translate }}
+    </app-button>
+  </div>
+</div>
+

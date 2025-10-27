@@ -1,0 +1,42 @@
+<div class="space-y-6">
+  <!-- Header with Back Button -->
+  <div class="flex items-center gap-4">
+    <button 
+      (click)="goBack()"
+      class="p-2 hover:bg-[var(--color-background-hover)] rounded-lg transition-colors"
+      aria-label="Go back">
+      <lucide-angular [img]="ArrowLeft" class="h-6 w-6 text-[var(--color-text)]"></lucide-angular>
+    </button>
+    <div>
+      <h1 class="text-3xl font-bold text-[var(--color-text)]">{{ 'notifications.title' | translate }}</h1>
+      <p *ngIf="showDetailView && selectedNotification" class="text-lg text-[var(--color-text)] mt-1">
+        {{ 'notifications.orderId' | translate }} {{ selectedNotification.orderId }}
+      </p>
+    </div>
+  </div>
+
+  <!-- Notifications List View -->
+  <app-notification-list
+    *ngIf="!showDetailView"
+    [notifications]="notifications"
+    [currentPage]="currentPage"
+    [itemsPerPage]="itemsPerPage"
+    [totalItems]="totalItems"
+    (notificationClick)="onNotificationClick($event)"
+    (itemsPerPageChange)="onItemsPerPageChange($event)"
+    (pageChange)="onPageChange($event)">
+  </app-notification-list>
+
+  <!-- Notification Detail View -->
+  <app-notification-detail
+    *ngIf="showDetailView"
+    [notification]="selectedNotification"
+    [proposedDate]="proposedDate"
+    [proposedTime]="proposedTime"
+    (close)="closeDetailView()"
+    (proposeNewTime)="onProposeNewTime()"
+    (confirmPickup)="onConfirmPickup()"
+    (proposedDateChange)="proposedDate = $event"
+    (proposedTimeChange)="proposedTime = $event">
+  </app-notification-detail>
+</div>

@@ -1,0 +1,471 @@
+import { Injectable } from '@angular/core';
+import { BehaviorSubject, Observable, throwError } from 'rxjs';
+import { map, tap, catchError } from 'rxjs/operators';
+import { ApiService } from './api.service';
+import { ConfigService } from './config.service';
+import { API_ENDPOINTS } from '@constants/app.constants';
+import { 
+  BackendUserDto, 
+  CreateUserDto, 
+  UpdateUserDto,
+  UpdateUserRolesDto,
+  UserRolesDto,
+  RoleDto,
+  CreateRoleDto,
+  UpdateRoleDto,
+  PermissionDto,
+  AssignPermissionsDto
+} from '@models/backend-user.model';
+import { ApiResponse, PagedResponse, PagedRequest } from '@models/api-response.model';
+
+/**
+ * Backend User Service
+ * Handles all user and role management operations with the backend
+ */
+@Injectable({
+  providedIn: 'root'
+})
+export class BackendUserService {
+  private usersSubject = new BehaviorSubject<BackendUserDto[]>([]);
+  public users$ = this.usersSubject.asObservable();
+
+  private rolesSubject = new BehaviorSubject<RoleDto[]>([]);
+  public roles$ = this.rolesSubject.asObservable();
+
+  constructor(
+    private apiService: ApiService,
+    private configService: ConfigService
+  ) {}
+
+  // ==================== USER MANAGEMENT ====================
+
+  /**
+   * Get all users
+   */
+  getUsers(): Observable<BackendUserDto[]> {
+    this.configService.log('Fetching all users');
+
+    return this.apiService.getWithAuth<ApiResponse<BackendUserDto[]>>(
+      API_ENDPOINTS.USERS.BASE
+    ).pipe(
+      map(response => {
+        if (!response.succeeded) {
+          throw new Error(response.message || 'Failed to fetch users');
+        }
+        return response.data || [];
+      }),
+      tap(users => {
+        this.usersSubject.next(users);
+        this.configService.log(`Fetched ${users.length} users`);
+      }),
+      catchError(error => {
+        this.configService.logError('Failed to fetch users', error);
+        return throwError(() => new Error(
+          error.userMessage || 'Failed to fetch users'
+        ));
+      })
+    );
+  }
+
+  /**
+   * Get user by ID
+   */
+  getUserById(id: string): Observable<BackendUserDto> {
+    this.configService.log('Fetching user', { id });
+
+    return this.apiService.getWithAuth<ApiResponse<BackendUserDto>>(
+      API_ENDPOINTS.USERS.BY_ID(id)
+    ).pipe(
+      map(response => {
+        if (!response.succeeded || !response.data) {
+          throw new Error(response.message || 'Failed to fetch user');
+        }
+        return response.data;
+      }),
+      catchError(error => {
+        this.configService.logError('Failed to fetch user', error);
+        return throwError(() => new Error(
+          error.userMessage || 'Failed to fetch user'
+        ));
+      })
+    );
+  }
+
+  /**
+   * Create new user
+   */
+  createUser(user: CreateUserDto): Observable<BackendUserDto> {
+    this.configService.log('Creating user', { userName: user.userName });
+
+    return this.apiService.postWithAuth<ApiResponse<BackendUserDto>>(
+      API_ENDPOINTS.USERS.BASE,
+      user
+    ).pipe(
+      map(response => {
+        if (!response.succeeded || !response.data) {
+          throw new Error(response.message || 'Failed to create user');
+        }
+        return response.data;
+      }),
+      tap(newUser => {
+        // Update local users list
+        const currentUsers = this.usersSubject.value;
+        this.usersSubject.next([...currentUsers, newUser]);
+        this.configService.log('User created successfully', { id: newUser.id });
+      }),
+      catchError(error => {
+        this.configService.logError('Failed to create user', error);
+        return throwError(() => new Error(
+          error.userMessage || 'Failed to create user'
+        ));
+      })
+    );
+  }
+
+  /**
+   * Update existing user
+   */
+  updateUser(id: string, user: UpdateUserDto): Observable<BackendUserDto> {
+    this.configService.log('Updating user', { id });
+
+    return this.apiService.putWithAuth<ApiResponse<BackendUserDto>>(
+      API_ENDPOINTS.USERS.BY_ID(id),
+      { ...user, id }
+    ).pipe(
+      map(response => {
+        if (!response.succeeded || !response.data) {
+          throw new Error(response.message || 'Failed to update user');
+        }
+        return response.data;
+      }),
+      tap(updatedUser => {
+        // Update local users list
+        const currentUsers = this.usersSubject.value;
+        const index = currentUsers.findIndex(u => u.id === id);
+        if (index !== -1) {
+          currentUsers[index] = updatedUser;
+          this.usersSubject.next([...currentUsers]);
+        }
+        this.configService.log('User updated successfully', { id });
+      }),
+      catchError(error => {
+        this.configService.logError('Failed to update user', error);
+        return throwError(() => new Error(
+          error.userMessage || 'Failed to update user'
+        ));
+      })
+    );
+  }
+
+  /**
+   * Delete user
+   */
+  deleteUser(id: string): Observable<boolean> {
+    this.configService.log('Deleting user', { id });
+
+    return this.apiService.deleteWithAuth<ApiResponse<any>>(
+      API_ENDPOINTS.USERS.BY_ID(id)
+    ).pipe(
+      map(response => {
+        if (!response.succeeded) {
+          throw new Error(response.message || 'Failed to delete user');
+        }
+        return true;
+      }),
+      tap(() => {
+        // Remove from local users list
+        const currentUsers = this.usersSubject.value;
+        this.usersSubject.next(currentUsers.filter(u => u.id !== id));
+        this.configService.log('User deleted successfully', { id });
+      }),
+      catchError(error => {
+        this.configService.logError('Failed to delete user', error);
+        return throwError(() => new Error(
+          error.userMessage || 'Failed to delete user'
+        ));
+      })
+    );
+  }
+
+  /**
+   * Get user roles
+   */
+  getUserRoles(userId: string): Observable<RoleDto[]> {
+    this.configService.log('Fetching user roles', { userId });
+
+    return this.apiService.getWithAuth<ApiResponse<RoleDto[]>>(
+      API_ENDPOINTS.USERS.ROLES(userId)
+    ).pipe(
+      map(response => {
+        if (!response.succeeded) {
+          throw new Error(response.message || 'Failed to fetch user roles');
+        }
+        return response.data || [];
+      }),
+      catchError(error => {
+        this.configService.logError('Failed to fetch user roles', error);
+        return throwError(() => new Error(
+          error.userMessage || 'Failed to fetch user roles'
+        ));
+      })
+    );
+  }
+
+  /**
+   * Update user roles
+   */
+  updateUserRoles(userId: string, roleIds: string[]): Observable<boolean> {
+    this.configService.log('Updating user roles', { userId, roleIds });
+
+    const dto: UpdateUserRolesDto = { userId, roleIds };
+
+    return this.apiService.putWithAuth<ApiResponse<any>>(
+      API_ENDPOINTS.USERS.UPDATE_ROLES(userId),
+      dto
+    ).pipe(
+      map(response => {
+        if (!response.succeeded) {
+          throw new Error(response.message || 'Failed to update user roles');
+        }
+        return true;
+      }),
+      tap(() => {
+        this.configService.log('User roles updated successfully', { userId });
+      }),
+      catchError(error => {
+        this.configService.logError('Failed to update user roles', error);
+        return throwError(() => new Error(
+          error.userMessage || 'Failed to update user roles'
+        ));
+      })
+    );
+  }
+
+  // ==================== ROLE MANAGEMENT ====================
+
+  /**
+   * Get all roles with pagination
+   */
+  getRolesWithPagination(request: PagedRequest): Observable<PagedResponse<RoleDto>> {
+    this.configService.log('Fetching roles with pagination', request);
+
+    return this.apiService.postWithAuth<PagedResponse<RoleDto>>(
+      API_ENDPOINTS.ROLES.BASE + '/GetRolesWithPagination',
+      request
+    ).pipe(
+      tap(response => {
+        if (response.succeeded && response.data) {
+          this.rolesSubject.next(response.data);
+          this.configService.log(`Fetched ${response.data.length} roles`);
+        }
+      }),
+      catchError(error => {
+        this.configService.logError('Failed to fetch roles', error);
+        return throwError(() => new Error(
+          error.userMessage || 'Failed to fetch roles'
+        ));
+      })
+    );
+  }
+
+  /**
+   * Get all roles (simple list)
+   */
+  getRoles(): Observable<RoleDto[]> {
+    this.configService.log('Fetching all roles');
+
+    return this.apiService.getWithAuth<ApiResponse<RoleDto[]>>(
+      API_ENDPOINTS.ROLES.BASE
+    ).pipe(
+      map(response => {
+        if (!response.succeeded) {
+          throw new Error(response.message || 'Failed to fetch roles');
+        }
+        return response.data || [];
+      }),
+      tap(roles => {
+        this.rolesSubject.next(roles);
+        this.configService.log(`Fetched ${roles.length} roles`);
+      }),
+      catchError(error => {
+        this.configService.logError('Failed to fetch roles', error);
+        return throwError(() => new Error(
+          error.userMessage || 'Failed to fetch roles'
+        ));
+      })
+    );
+  }
+
+  /**
+   * Get role by ID
+   */
+  getRoleById(id: string): Observable<RoleDto> {
+    this.configService.log('Fetching role', { id });
+
+    return this.apiService.getWithAuth<ApiResponse<RoleDto>>(
+      API_ENDPOINTS.ROLES.BY_ID(id)
+    ).pipe(
+      map(response => {
+        if (!response.succeeded || !response.data) {
+          throw new Error(response.message || 'Failed to fetch role');
+        }
+        return response.data;
+      }),
+      catchError(error => {
+        this.configService.logError('Failed to fetch role', error);
+        return throwError(() => new Error(
+          error.userMessage || 'Failed to fetch role'
+        ));
+      })
+    );
+  }
+
+  /**
+   * Create new role
+   */
+  createRole(role: CreateRoleDto): Observable<RoleDto> {
+    this.configService.log('Creating role', { name: role.name });
+
+    return this.apiService.postWithAuth<ApiResponse<RoleDto>>(
+      API_ENDPOINTS.ROLES.BASE,
+      role
+    ).pipe(
+      map(response => {
+        if (!response.succeeded || !response.data) {
+          throw new Error(response.message || 'Failed to create role');
+        }
+        return response.data;
+      }),
+      tap(newRole => {
+        // Update local roles list
+        const currentRoles = this.rolesSubject.value;
+        this.rolesSubject.next([...currentRoles, newRole]);
+        this.configService.log('Role created successfully', { id: newRole.id });
+      }),
+      catchError(error => {
+        this.configService.logError('Failed to create role', error);
+        return throwError(() => new Error(
+          error.userMessage || 'Failed to create role'
+        ));
+      })
+    );
+  }
+
+  /**
+   * Update existing role
+   */
+  updateRole(id: string, role: UpdateRoleDto): Observable<RoleDto> {
+    this.configService.log('Updating role', { id });
+
+    return this.apiService.putWithAuth<ApiResponse<RoleDto>>(
+      API_ENDPOINTS.ROLES.BY_ID(id),
+      { ...role, id }
+    ).pipe(
+      map(response => {
+        if (!response.succeeded || !response.data) {
+          throw new Error(response.message || 'Failed to update role');
+        }
+        return response.data;
+      }),
+      tap(updatedRole => {
+        // Update local roles list
+        const currentRoles = this.rolesSubject.value;
+        const index = currentRoles.findIndex(r => r.id === id);
+        if (index !== -1) {
+          currentRoles[index] = updatedRole;
+          this.rolesSubject.next([...currentRoles]);
+        }
+        this.configService.log('Role updated successfully', { id });
+      }),
+      catchError(error => {
+        this.configService.logError('Failed to update role', error);
+        return throwError(() => new Error(
+          error.userMessage || 'Failed to update role'
+        ));
+      })
+    );
+  }
+
+  /**
+   * Delete role
+   */
+  deleteRole(id: string): Observable<boolean> {
+    this.configService.log('Deleting role', { id });
+
+    return this.apiService.deleteWithAuth<ApiResponse<any>>(
+      API_ENDPOINTS.ROLES.BY_ID(id)
+    ).pipe(
+      map(response => {
+        if (!response.succeeded) {
+          throw new Error(response.message || 'Failed to delete role');
+        }
+        return true;
+      }),
+      tap(() => {
+        // Remove from local roles list
+        const currentRoles = this.rolesSubject.value;
+        this.rolesSubject.next(currentRoles.filter(r => r.id !== id));
+        this.configService.log('Role deleted successfully', { id });
+      }),
+      catchError(error => {
+        this.configService.logError('Failed to delete role', error);
+        return throwError(() => new Error(
+          error.userMessage || 'Failed to delete role'
+        ));
+      })
+    );
+  }
+
+  /**
+   * Get role permissions
+   */
+  getRolePermissions(roleId: string): Observable<PermissionDto[]> {
+    this.configService.log('Fetching role permissions', { roleId });
+
+    return this.apiService.getWithAuth<ApiResponse<PermissionDto[]>>(
+      API_ENDPOINTS.ROLES.PERMISSIONS(roleId)
+    ).pipe(
+      map(response => {
+        if (!response.succeeded) {
+          throw new Error(response.message || 'Failed to fetch role permissions');
+        }
+        return response.data || [];
+      }),
+      catchError(error => {
+        this.configService.logError('Failed to fetch role permissions', error);
+        return throwError(() => new Error(
+          error.userMessage || 'Failed to fetch role permissions'
+        ));
+      })
+    );
+  }
+
+  /**
+   * Assign permissions to role
+   */
+  assignPermissions(dto: AssignPermissionsDto): Observable<boolean> {
+    this.configService.log('Assigning permissions to role', dto);
+
+    return this.apiService.postWithAuth<ApiResponse<any>>(
+      API_ENDPOINTS.ROLES.PERMISSIONS(dto.roleId),
+      dto
+    ).pipe(
+      map(response => {
+        if (!response.succeeded) {
+          throw new Error(response.message || 'Failed to assign permissions');
+        }
+        return true;
+      }),
+      tap(() => {
+        this.configService.log('Permissions assigned successfully', { roleId: dto.roleId });
+      }),
+      catchError(error => {
+        this.configService.logError('Failed to assign permissions', error);
+        return throwError(() => new Error(
+          error.userMessage || 'Failed to assign permissions'
+        ));
+      })
+    );
+  }
+}
+

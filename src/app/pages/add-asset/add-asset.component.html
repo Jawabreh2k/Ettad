@@ -1,0 +1,106 @@
+<div class="space-y-6">
+  <!-- Header -->
+  <div class="flex items-center justify-between">
+    <div>
+      <h1 class="text-3xl font-bold text-[var(--color-text)]">Add New Asset</h1>
+      <p class="text-[var(--color-text-muted)] mt-1">Register a new asset in the system</p>
+    </div>
+  </div>
+
+  <!-- Asset Form -->
+  <app-card title="Asset Information" [shadow]="true">
+    <form (ngSubmit)="onSubmit()" class="space-y-6">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Asset Name -->
+        <div>
+          <label class="block text-sm font-medium text-[var(--color-text)] mb-2">Asset Name *</label>
+          <input
+            type="text"
+            [(ngModel)]="assetForm.name"
+            name="name"
+            required
+            class="w-full px-3 py-2 border border-[var(--color-border)] rounded-lg focus:ring-2 focus:ring-[var(--color-accent)] focus:border-transparent outline-none"
+            placeholder="Enter asset name"
+          />
+        </div>
+
+        <!-- Category -->
+        <div>
+          <label class="block text-sm font-medium text-[var(--color-text)] mb-2">Category *</label>
+          <select
+            [(ngModel)]="assetForm.category"
+            name="category"
+            required
+            class="w-full px-3 py-2 border border-[var(--color-border)] rounded-lg focus:ring-2 focus:ring-[var(--color-accent)] focus:border-transparent outline-none"
+          >
+            <option value="">Select category</option>
+            <option *ngFor="let category of categories" [value]="category">{{ category }}</option>
+          </select>
+        </div>
+
+        <!-- Serial Number -->
+        <div>
+          <label class="block text-sm font-medium text-[var(--color-text)] mb-2">Serial Number *</label>
+          <input
+            type="text"
+            [(ngModel)]="assetForm.serialNumber"
+            name="serialNumber"
+            required
+            class="w-full px-3 py-2 border border-[var(--color-border)] rounded-lg focus:ring-2 focus:ring-[var(--color-accent)] focus:border-transparent outline-none"
+            placeholder="Enter serial number"
+          />
+        </div>
+
+        <!-- Location -->
+        <div>
+          <label class="block text-sm font-medium text-[var(--color-text)] mb-2">Location *</label>
+          <select
+            [(ngModel)]="assetForm.location"
+            name="location"
+            required
+            class="w-full px-3 py-2 border border-[var(--color-border)] rounded-lg focus:ring-2 focus:ring-[var(--color-accent)] focus:border-transparent outline-none"
+          >
+            <option value="">Select location</option>
+            <option *ngFor="let location of locations" [value]="location">{{ location }}</option>
+          </select>
+        </div>
+
+        <!-- Status -->
+        <div>
+          <label class="block text-sm font-medium text-[var(--color-text)] mb-2">Status</label>
+          <select
+            [(ngModel)]="assetForm.status"
+            name="status"
+            class="w-full px-3 py-2 border border-[var(--color-border)] rounded-lg focus:ring-2 focus:ring-[var(--color-accent)] focus:border-transparent outline-none"
+          >
+            <option *ngFor="let status of statuses" [value]="status.toLowerCase()">{{ status }}</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Description -->
+      <div>
+        <label class="block text-sm font-medium text-[var(--color-text)] mb-2">Description</label>
+        <textarea
+          [(ngModel)]="assetForm.description"
+          name="description"
+          rows="4"
+          class="w-full px-3 py-2 border border-[var(--color-border)] rounded-lg focus:ring-2 focus:ring-[var(--color-accent)] focus:border-transparent outline-none"
+          placeholder="Enter asset description"
+        ></textarea>
+      </div>
+
+      <!-- Form Actions -->
+      <div class="flex justify-end gap-3 pt-4 border-t border-[var(--color-border)]">
+        <app-button variant="outline" type="button" (clicked)="onCancel()">
+          <lucide-angular [img]="X" class="h-4 w-4 mr-2"></lucide-angular>
+          Cancel
+        </app-button>
+        <app-button variant="primary" type="submit">
+          <lucide-angular [img]="Save" class="h-4 w-4 mr-2"></lucide-angular>
+          Save Asset
+        </app-button>
+      </div>
+    </form>
+  </app-card>
+</div>

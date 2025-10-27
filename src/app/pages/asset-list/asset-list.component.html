@@ -1,0 +1,116 @@
+<div class="space-y-6">
+  <!-- Header -->
+  <div class="flex items-center justify-between">
+    <div>
+      <h1 class="text-3xl font-bold text-[var(--color-text)]">Asset List</h1>
+      <p class="text-[var(--color-text-muted)] mt-1">Manage and track all assets in the system</p>
+    </div>
+    <app-button variant="primary">
+      <lucide-angular [img]="Plus" class="h-4 w-4 mr-2"></lucide-angular>
+      Add Asset
+    </app-button>
+  </div>
+
+  <!-- Filters -->
+  <app-card [shadow]="true">
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <!-- Search -->
+      <div class="relative">
+        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+          <lucide-angular [img]="Search" class="h-5 w-5 text-[var(--color-text-muted)]"></lucide-angular>
+        </div>
+        <input
+          type="text"
+          [(ngModel)]="searchTerm"
+          placeholder="Search assets..."
+          class="w-full pl-10 pr-3 py-2 border border-[var(--color-border)] rounded-lg focus:ring-2 focus:ring-[var(--color-accent)] focus:border-transparent outline-none"
+        />
+      </div>
+
+      <!-- Category Filter -->
+      <select
+        [(ngModel)]="selectedCategory"
+        class="px-3 py-2 border border-[var(--color-border)] rounded-lg focus:ring-2 focus:ring-[var(--color-accent)] focus:border-transparent outline-none"
+      >
+        <option *ngFor="let category of categories" [value]="category">{{ category }}</option>
+      </select>
+
+      <!-- Status Filter -->
+      <select
+        [(ngModel)]="selectedStatus"
+        class="px-3 py-2 border border-[var(--color-border)] rounded-lg focus:ring-2 focus:ring-[var(--color-accent)] focus:border-transparent outline-none"
+      >
+        <option *ngFor="let status of statuses" [value]="status">{{ status }}</option>
+      </select>
+
+      <!-- Filter Button -->
+      <app-button variant="outline">
+        <lucide-angular [img]="Filter" class="h-4 w-4 mr-2"></lucide-angular>
+        Filter
+      </app-button>
+    </div>
+  </app-card>
+
+  <!-- Assets Table -->
+  <app-card title="Assets ({{ filteredAssets.length }})" [shadow]="true">
+    <div class="overflow-x-auto">
+      <table class="w-full">
+        <thead>
+          <tr class="border-b border-[var(--color-border)]">
+            <th class="text-left py-3 px-4 font-semibold text-[var(--color-text)]">Asset</th>
+            <th class="text-left py-3 px-4 font-semibold text-[var(--color-text)]">Category</th>
+            <th class="text-left py-3 px-4 font-semibold text-[var(--color-text)]">Serial Number</th>
+            <th class="text-left py-3 px-4 font-semibold text-[var(--color-text)]">Location</th>
+            <th class="text-left py-3 px-4 font-semibold text-[var(--color-text)]">Status</th>
+            <th class="text-left py-3 px-4 font-semibold text-[var(--color-text)]">Assigned To</th>
+            <th class="text-left py-3 px-4 font-semibold text-[var(--color-text)]">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let asset of filteredAssets" class="border-b border-[var(--color-border-muted)] hover:bg-[var(--color-background-hover)]">
+            <td class="py-3 px-4">
+              <div>
+                <div class="font-semibold text-[var(--color-text)]">{{ asset.name }}</div>
+                <div class="text-sm text-[var(--color-text-muted)]">{{ asset.id }}</div>
+              </div>
+            </td>
+            <td class="py-3 px-4 text-[var(--color-text)]">{{ asset.category }}</td>
+            <td class="py-3 px-4 text-[var(--color-text)]">{{ asset.serialNumber }}</td>
+            <td class="py-3 px-4 text-[var(--color-text)]">{{ asset.location }}</td>
+            <td class="py-3 px-4">
+              <span class="px-2 py-1 rounded-full text-xs font-medium {{ getStatusColor(asset.status) }} text-white">
+                {{ asset.status }}
+              </span>
+            </td>
+            <td class="py-3 px-4 text-[var(--color-text)]">{{ asset.assignedTo || 'Unassigned' }}</td>
+            <td class="py-3 px-4">
+              <div class="flex gap-2">
+                <button
+                  (click)="onView(asset.id)"
+                  class="p-1 rounded hover:bg-[var(--color-background-hover)] transition-colors"
+                  title="View"
+                >
+                  <lucide-angular [img]="Eye" class="h-4 w-4 text-[var(--color-text-muted)]"></lucide-angular>
+                </button>
+                <button
+                  (click)="onEdit(asset.id)"
+                  class="p-1 rounded hover:bg-[var(--color-background-hover)] transition-colors"
+                  title="Edit"
+                >
+                  <lucide-angular [img]="Edit" class="h-4 w-4 text-[var(--color-text-muted)]"></lucide-angular>
+                </button>
+                <button
+                  (click)="onDelete(asset.id)"
+                  class="p-1 rounded hover:bg-[var(--color-background-hover)] transition-colors"
+                  title="Delete"
+                >
+                  <lucide-angular [img]="Trash2" class="h-4 w-4 text-[var(--color-error)]"></lucide-angular>
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </app-card>
+</div>

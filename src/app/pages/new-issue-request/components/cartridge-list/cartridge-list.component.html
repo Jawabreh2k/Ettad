@@ -1,0 +1,119 @@
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+  <!-- Left Side - Cartridge List -->
+  <div class="bg-white rounded-lg p-6 shadow-sm">
+    <h2 class="text-lg font-semibold text-[var(--color-text)] mb-4">{{ 'newIssueRequest.cartidgeList' | translate }}</h2>
+    <div class="space-y-2 max-h-96 overflow-y-auto pr-2">
+      <div
+        *ngFor="let cartridge of cartridges"
+        (click)="onCartridgeClick(cartridge)"
+        class="p-3 border rounded-lg cursor-pointer transition-colors text-sm"
+        [ngClass]="{
+          'border-[var(--color-accent)] bg-[var(--color-accent)]/5': cartridge.selected,
+          'border-[var(--color-border)] hover:bg-[var(--color-background-hover)]': !cartridge.selected
+        }">
+        <p class="text-[var(--color-text)]">{{ cartridge.name }}</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Right Side - Filters -->
+  <div class="bg-[var(--color-background-muted)] rounded-lg p-6 shadow-sm space-y-6">
+    <!-- Select Bullet Diameter -->
+    <div>
+      <label class="block text-sm font-semibold text-[var(--color-text)] mb-2">
+        {{ 'newIssueRequest.selectBulletDiameter' | translate }}
+      </label>
+      <select
+        [ngModel]="selectedBulletDiameter"
+        (ngModelChange)="onBulletDiameterChange($event)"
+        class="w-full px-4 py-2 border border-[var(--color-border)] rounded-lg text-sm text-[var(--color-text)] bg-white focus:outline-none focus:ring-2 focus:ring-[#D0B888] focus:border-transparent">
+        <option *ngFor="let diameter of bulletDiameters" [value]="diameter">{{ diameter }}</option>
+      </select>
+    </div>
+
+    <!-- Select Case Length -->
+    <div>
+      <label class="block text-sm font-semibold text-[var(--color-text)] mb-2">
+        {{ 'newIssueRequest.selectCaseLength' | translate }}
+      </label>
+      <select
+        [ngModel]="selectedCaseLength"
+        (ngModelChange)="onCaseLengthChange($event)"
+        class="w-full px-4 py-2 border border-[var(--color-border)] rounded-lg text-sm text-[var(--color-text)] bg-white focus:outline-none focus:ring-2 focus:ring-[#D0B888] focus:border-transparent">
+        <option *ngFor="let length of caseLengths" [value]="length">{{ length }}</option>
+      </select>
+    </div>
+
+    <!-- Linked/Not Linked -->
+    <div>
+      <label class="block text-sm font-semibold text-[var(--color-text)] mb-2">
+        {{ 'newIssueRequest.linkedNotLinked' | translate }}
+      </label>
+      <select
+        [ngModel]="selectedLinked"
+        (ngModelChange)="onLinkedChange($event)"
+        class="w-full px-4 py-2 border border-[var(--color-border)] rounded-lg text-sm text-[var(--color-text)] bg-white focus:outline-none focus:ring-2 focus:ring-[#D0B888] focus:border-transparent">
+        <option *ngFor="let option of linkedOptions" [value]="option">{{ option }}</option>
+      </select>
+    </div>
+
+    <!-- Nature Options -->
+    <div>
+      <label class="block text-sm font-semibold text-[var(--color-text)] mb-2">
+        {{ 'newIssueRequest.natureOptions' | translate }}
+      </label>
+      <select
+        [ngModel]="selectedNature"
+        (ngModelChange)="onNatureChange($event)"
+        class="w-full px-4 py-2 border border-[var(--color-border)] rounded-lg text-sm text-[var(--color-text)] bg-white focus:outline-none focus:ring-2 focus:ring-[#D0B888] focus:border-transparent">
+        <option *ngFor="let nature of natureOptions" [value]="nature">{{ nature }}</option>
+      </select>
+    </div>
+
+    <!-- Order Priority -->
+    <div>
+      <label class="block text-sm font-semibold text-[var(--color-text)] mb-2">
+        {{ 'newIssueRequest.orderPriority' | translate }}
+      </label>
+      <select
+        [ngModel]="selectedPriority"
+        (ngModelChange)="onPriorityChange($event)"
+        class="w-full px-4 py-2 border border-[var(--color-border)] rounded-lg text-sm text-[var(--color-text)] bg-white focus:outline-none focus:ring-2 focus:ring-[#D0B888] focus:border-transparent">
+        <option *ngFor="let priority of orderPriorities" [value]="priority">{{ priority }}</option>
+      </select>
+    </div>
+
+    <!-- Enter Quantity -->
+    <div>
+      <label class="block text-sm font-semibold text-[var(--color-text)] mb-2">
+        {{ 'newIssueRequest.enterQuantity' | translate }}
+      </label>
+      <input
+        type="number"
+        [ngModel]="quantity"
+        (ngModelChange)="onQuantityChange($event)"
+        [placeholder]="'newIssueRequest.enterQuantityPlaceholder' | translate"
+        class="w-full px-4 py-2 border border-[var(--color-border)] rounded-lg text-sm text-[var(--color-text)] bg-white focus:outline-none focus:ring-2 focus:ring-[#D0B888] focus:border-transparent">
+    </div>
+  </div>
+</div>
+
+<!-- Action Buttons -->
+<div class="flex justify-between items-center mt-6">
+  <div class="flex-1"></div>
+  <app-button
+    variant="outline"
+    (clicked)="onConfirmSelection()"
+    class="bg-[#D0B888] text-white border-[#D0B888] hover:bg-[#BEA06E]">
+    {{ 'newIssueRequest.confirmSelection' | translate }}
+  </app-button>
+  <div class="flex-1 flex justify-end">
+    <app-button
+      variant="primary"
+      (clicked)="onNext()"
+      class="bg-[#D0B888] text-white hover:bg-[#BEA06E]">
+      {{ 'newIssueRequest.next' | translate }}
+    </app-button>
+  </div>
+</div>
+

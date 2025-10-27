@@ -1,0 +1,62 @@
+<aside
+  class="bg-white shadow-custom-lg transition-all duration-300 ease-in-out flex flex-col h-full"
+  [class.w-64]="!isCollapsed"
+  [class.w-20]="isCollapsed"
+>
+  <!-- Toggle Button Section -->
+  <div class="h-16 flex items-center justify-end px-4 border-b border-[var(--color-border)]">
+    <button
+      (click)="toggleCollapse()"
+      class="p-2 rounded-lg hover:bg-[var(--color-background-hover)] transition-colors duration-200"
+      [attr.aria-label]="isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'"
+    >
+      <lucide-angular
+        [img]="isCollapsed ? ChevronRight : ChevronLeft"
+        class="h-5 w-5 text-[var(--color-text-muted)]"
+      ></lucide-angular>
+    </button>
+  </div>
+
+  <!-- Navigation Menu -->
+  <nav class="flex-1 overflow-y-auto py-4">
+    <ul class="space-y-1 px-3">
+      <li *ngFor="let item of menuItems">
+        <!-- Header/Section Label -->
+        <div *ngIf="item.isHeader" class="px-3 py-2 mt-4 first:mt-0">
+          <span
+            class="text-xs font-semibold text-[var(--color-text-muted)] uppercase tracking-wider transition-opacity duration-300"
+            [class.opacity-0]="isCollapsed"
+            [class.opacity-100]="!isCollapsed"
+            [class.hidden]="isCollapsed"
+          >
+            {{ item.label | translate }}
+          </span>
+        </div>
+
+        <!-- Regular Menu Item -->
+        <a
+          *ngIf="!item.isHeader"
+          [routerLink]="item.route"
+          routerLinkActive="bg-[var(--color-background-hover)] text-[var(--color-text)]"
+          [routerLinkActiveOptions]="{ exact: false }"
+          class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 hover:bg-[var(--color-background-active)] text-[var(--color-text-muted)] group"
+          [attr.title]="isCollapsed ? item.label : null"
+        >
+          <lucide-angular
+            [img]="item.icon"
+            class="h-5 w-5 flex-shrink-0"
+          ></lucide-angular>
+          <span
+            class="font-medium transition-opacity duration-300"
+            [class.opacity-0]="isCollapsed"
+            [class.opacity-100]="!isCollapsed"
+            [class.hidden]="isCollapsed"
+          >
+            {{ item.label | translate }}
+          </span>
+        </a>
+      </li>
+    </ul>
+  </nav>
+</aside>
+

@@ -1,0 +1,29 @@
+<div class="flex items-center gap-1">
+  <!-- Previous Button -->
+  <button
+    (click)="onPrevious()"
+    [disabled]="currentPage === 1"
+    class="px-3 py-2 rounded-lg border border-[var(--color-border)] text-[var(--color-text-muted)] hover:bg-[var(--color-background-hover)] disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
+    <lucide-angular [img]="ChevronLeft" class="h-4 w-4"></lucide-angular>
+  </button>
+
+  <!-- Page Numbers -->
+  <button
+    *ngFor="let page of pages"
+    (click)="onPageClick(page)"
+    [class.bg-[#0F60FF]]="page === currentPage"
+    [class.text-white]="page === currentPage"
+    [class.bg-[#F1F2F6]]="page !== currentPage"
+    [class.text-[var(--color-text)]]="page !== currentPage"
+    class="px-4 py-2 rounded-lg font-medium text-sm transition-colors hover:opacity-80">
+    {{ page }}
+  </button>
+
+  <!-- Next Button -->
+  <button
+    (click)="onNext()"
+    [disabled]="currentPage === totalPages"
+    class="px-3 py-2 rounded-lg border border-[var(--color-border)] text-[var(--color-text-muted)] hover:bg-[var(--color-background-hover)] disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
+    <lucide-angular [img]="ChevronRight" class="h-4 w-4"></lucide-angular>
+  </button>
+</div>

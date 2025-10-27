@@ -1,0 +1,108 @@
+<div class="space-y-6">
+  <!-- Header -->
+  <div>
+    <h1 class="text-3xl font-bold text-[var(--color-text)]">{{ 'newIssueRequest.newOrderIssue' | translate }}</h1>
+  </div>
+
+  <!-- Stepper -->
+  <app-stepper
+    [steps]="steps"
+    [currentStep]="currentStep"
+    (stepChange)="onStepChange($event)">
+  </app-stepper>
+
+  <!-- Step 1: Selection -->
+  <div *ngIf="currentStep === 0">
+    <!-- Cartridge Details View -->
+    <app-cartridge-details
+      *ngIf="showCartridgeDetails"
+      [cartridge]="selectedCartridgeForView"
+      (select)="onSelectCartridge()"
+      (cancel)="onCloseCartridgeDetails()">
+    </app-cartridge-details>
+
+    <!-- Cartridge List View -->
+    <app-cartridge-list
+      *ngIf="!showCartridgeDetails"
+      [cartridges]="filteredCartridges"
+      [bulletDiameters]="bulletDiameters"
+      [caseLengths]="caseLengths"
+      [linkedOptions]="linkedOptions"
+      [natureOptions]="natureOptions"
+      [orderPriorities]="orderPriorities"
+      [selectedBulletDiameter]="selectedBulletDiameter"
+      [selectedCaseLength]="selectedCaseLength"
+      [selectedLinked]="selectedLinked"
+      [selectedNature]="selectedNature"
+      [selectedPriority]="selectedPriority"
+      [quantity]="quantity"
+      (cartridgeClick)="onCartridgeClick($event)"
+      (filterChange)="filterCartridges()"
+      (confirmSelection)="onConfirmSelection()"
+      (next)="onNext()"
+      (bulletDiameterChange)="selectedBulletDiameter = $event"
+      (caseLengthChange)="selectedCaseLength = $event"
+      (linkedChange)="selectedLinked = $event"
+      (natureChange)="selectedNature = $event"
+      (priorityChange)="selectedPriority = $event"
+      (quantityChange)="quantity = $event">
+    </app-cartridge-list>
+  </div>
+
+  <!-- Step 2: Usage -->
+  <app-usage-form
+    *ngIf="currentStep === 1"
+    [fromReserve]="fromReserve"
+    [usePurpose]="usePurpose"
+    [annualDiscardSpecialOps]="annualDiscardSpecialOps"
+    [usageLocation]="usageLocation"
+    [numberOfOfficers]="numberOfOfficers"
+    [numberOfOtherRanks]="numberOfOtherRanks"
+    [usageDate]="usageDate"
+    [usageTime]="usageTime"
+    [totalReserve]="totalReserve"
+    [availableReserve]="availableReserve"
+    [orderedQuantity]="orderedQuantity"
+    [utilizedQuantity]="utilizedQuantity"
+    (fromReserveChange)="fromReserve = $event"
+    (usePurposeChange)="usePurpose = $event"
+    (annualDiscardSpecialOpsChange)="annualDiscardSpecialOps = $event"
+    (usageLocationChange)="usageLocation = $event"
+    (numberOfOfficersChange)="numberOfOfficers = $event"
+    (numberOfOtherRanksChange)="numberOfOtherRanks = $event"
+    (usageDateChange)="usageDate = $event"
+    (usageTimeChange)="usageTime = $event"
+    (previous)="onPrevious()"
+    (next)="onNext()">
+  </app-usage-form>
+
+  <!-- Step 3: Review -->
+  <app-review-form
+    *ngIf="currentStep === 2"
+    [requesterName]="requesterName"
+    [requesterComments]="requesterComments"
+    [orderType]="orderType"
+    [selectedPriority]="selectedPriority"
+    [fromReserve]="fromReserve"
+    [usePurpose]="usePurpose"
+    [usageDate]="usageDate"
+    (requesterNameChange)="requesterName = $event"
+    (requesterCommentsChange)="requesterComments = $event"
+    (orderTypeChange)="orderType = $event"
+    (fromReserveChange)="fromReserve = $event"
+    (usePurposeChange)="usePurpose = $event"
+    (usageDateChange)="usageDate = $event"
+    (next)="onNext()">
+  </app-review-form>
+
+  <!-- Step 4: Send -->
+  <div *ngIf="currentStep === 3" class="bg-[#F5F5F5] rounded-lg py-24 px-12 text-center">
+    <h2 class="text-2xl font-bold text-[var(--color-text)] mb-8">{{ 'newIssueRequest.orderSentSuccessfully' | translate }}</h2>
+    
+    <button 
+      class="px-8 py-3 bg-[#D0B888] text-white text-sm font-medium rounded-lg hover:bg-[#BEA06E] transition-colors"
+      (click)="onTrackOrder()">
+      {{ 'newIssueRequest.trackOrder' | translate }}
+    </button>
+  </div>
+</div>

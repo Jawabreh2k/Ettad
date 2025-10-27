@@ -1,0 +1,11 @@
+<div
+  class="bg-white rounded-lg border border-[var(--color-border)]"
+  [class.shadow-custom-md]="shadow"
+  [class.p-6]="padding"
+>
+  <h3 *ngIf="title" class="text-lg font-semibold text-[var(--color-text)] mb-4">
+    {{ title }}
+  </h3>
+  <ng-content></ng-content>
+</div>
+

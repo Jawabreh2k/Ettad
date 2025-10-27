@@ -1,0 +1,125 @@
+<div class="flex justify-center">
+  <div class="w-full max-w-4xl">
+    <div class="space-y-6">
+      <div>
+        <h1 class="text-3xl font-bold text-[var(--color-text)]">{{ 'returnRequest.title' | translate }}</h1>
+      </div>
+
+      <div class="bg-[#F5F5F5] rounded-xl p-8">
+        <form #returnForm="ngForm" (ngSubmit)="onSendRequest(returnForm)">
+          <div class="space-y-6 max-w-3xl">
+            <div class="flex items-center gap-8">
+              <label class="text-sm font-medium text-[#6B7280] w-40 shrink-0">
+                {{ 'returnRequest.dateCreated' | translate }}
+              </label>
+              <input
+                type="text"
+                [(ngModel)]="dateCreated"
+                name="dateCreated"
+                readonly
+                class="flex-1 px-4 py-2.5 bg-white rounded-lg border-0 text-sm text-[#9CA3AF] focus:outline-none focus:ring-2 focus:ring-[var(--color-brand)]"
+              />
+            </div>
+
+            <div class="flex items-start gap-8">
+              <label class="text-sm font-medium text-[#6B7280] w-40 shrink-0 pt-2.5">
+                {{ 'returnRequest.returnOrderId' | translate }}
+              </label>
+              <div class="flex-1">
+                <input
+                  type="text"
+                  [(ngModel)]="returnOrderId"
+                  name="returnOrderId"
+                  placeholder="Enter order ID (e.g., 1072)"
+                  [class.border-red-500]="hasError('returnOrderId')"
+                  class="w-full px-4 py-2.5 bg-white rounded-lg border text-sm text-[#23272E] placeholder:text-[#9CA3AF] focus:outline-none focus:ring-2 focus:ring-[var(--color-brand)]"
+                />
+                <p class="mt-1.5 text-xs" [class.text-red-500]="hasError('returnOrderId')" [class.text-[#9CA3AF]]="!hasError('returnOrderId')">
+                  <span *ngIf="hasError('returnOrderId')">{{ getError('returnOrderId') }}</span>
+                  <span *ngIf="!hasError('returnOrderId')">{{ 'returnRequest.orderIdHint' | translate }}</span>
+                </p>
+              </div>
+            </div>
+
+            <div class="flex items-start gap-8">
+              <label class="text-sm font-medium text-[#6B7280] w-40 shrink-0 pt-2.5">
+                {{ 'returnRequest.quantity' | translate }}
+              </label>
+              <div class="flex-1">
+                <input
+                  type="text"
+                  [(ngModel)]="quantity"
+                  name="quantity"
+                  placeholder="Enter quantity (e.g., 20,000)"
+                  [class.border-red-500]="hasError('quantity')"
+                  class="w-full px-4 py-2.5 bg-white rounded-lg border text-sm text-[#23272E] placeholder:text-[#9CA3AF] focus:outline-none focus:ring-2 focus:ring-[var(--color-brand)]"
+                />
+                <p class="mt-1.5 text-xs" [class.text-red-500]="hasError('quantity')" [class.text-[#9CA3AF]]="!hasError('quantity')">
+                  <span *ngIf="hasError('quantity')">{{ getError('quantity') }}</span>
+                  <span *ngIf="!hasError('quantity')">{{ 'returnRequest.quantityHint' | translate }}</span>
+                </p>
+              </div>
+            </div>
+
+            <div class="flex items-center gap-8">
+              <label class="text-sm font-medium text-[#6B7280] w-40 shrink-0">
+                {{ 'returnRequest.comments' | translate }}
+              </label>
+              <input
+                type="text"
+                [(ngModel)]="comments"
+                name="comments"
+                placeholder="Enter reason for return (optional)"
+                class="flex-1 px-4 py-2.5 bg-white rounded-lg border-0 text-sm text-[#23272E] placeholder:text-[#9CA3AF] focus:outline-none focus:ring-2 focus:ring-[var(--color-brand)]"
+              />
+            </div>
+
+            <div class="flex items-center gap-8">
+              <div class="flex items-center gap-2 w-40 shrink-0">
+                <label class="text-sm font-medium text-[#6B7280]">
+                  {{ 'returnRequest.attachment' | translate }}
+                </label>
+                <button
+                  type="button"
+                  (click)="triggerFileInput()"
+                  class="p-1 hover:bg-[#E5E7EB] rounded transition-colors"
+                  [attr.aria-label]="'returnRequest.uploadFile' | translate"
+                >
+                  <lucide-angular
+                    [img]="Upload"
+                    class="h-4 w-4 text-[#6B7280]"
+                  ></lucide-angular>
+                </button>
+              </div>
+              <input
+                type="file"
+                id="fileUpload"
+                (change)="onFileSelect($event)"
+                class="hidden"
+                accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+              />
+              <input
+                type="text"
+                [value]="attachmentName"
+                readonly
+                placeholder="No file selected"
+                class="flex-1 px-4 py-2.5 bg-white rounded-lg border-0 text-sm text-[#9CA3AF] cursor-default focus:outline-none"
+              />
+            </div>
+
+            <div class="flex justify-center pt-6">
+              <app-button
+                type="submit"
+                variant="primary"
+                size="md"
+                class="px-12"
+              >
+                {{ 'returnRequest.sendRequest' | translate }}
+              </app-button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,32 @@
+<div class="space-y-6">
+  <!-- Header -->
+  <div>
+    <h1 class="text-3xl font-bold text-[var(--color-text)]">{{ 'dashboard.title' | translate }}</h1>
+    <p class="text-[var(--color-text-muted)] mt-1">{{ 'dashboard.subtitle' | translate }}</p>
+  </div>
+
+  <!-- Status Cards Grid -->
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <!-- New Issue Card -->
+    <app-status-card
+      [title]="'dashboard.newIssue' | translate"
+      status="new-issue"
+      [orders]="newIssueOrders"
+    ></app-status-card>
+
+    <!-- On Progress Card -->
+    <app-status-card
+      [title]="'dashboard.onProgress' | translate"
+      status="on-progress"
+      [orders]="onProgressOrders"
+    ></app-status-card>
+
+    <!-- Completed Card -->
+    <app-status-card
+      [title]="'dashboard.completed' | translate"
+      status="completed"
+      [orders]="completedOrders"
+    ></app-status-card>
+  </div>
+</div>
+

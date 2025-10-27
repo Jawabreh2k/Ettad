@@ -1,0 +1,25 @@
+<div class="flex items-center justify-center w-full mb-8">
+  <div class="flex items-center gap-0">
+    <div *ngFor="let step of steps; let i = index" class="flex items-center">
+      <!-- Step Label and Line -->
+      <div class="flex items-center">
+        <span
+          class="text-sm font-medium whitespace-nowrap px-4"
+          [class.text-[#5B4E8D]]="isStepActive(i)"
+          [class.font-semibold]="isStepActive(i)"
+          [class.text-[var(--color-text-muted)]]="!isStepActive(i)">
+          {{ step.label | translate }}
+        </span>
+
+        <!-- Connector Line -->
+        <div
+          *ngIf="i < steps.length - 1"
+          class="h-0.5 w-20"
+          [class.bg-[#5B4E8D]]="isStepActive(i)"
+          [class.bg-[var(--color-border)]]="!isStepActive(i)">
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+

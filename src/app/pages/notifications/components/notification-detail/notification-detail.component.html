@@ -1,0 +1,63 @@
+<div class="bg-[#F5F5F5] rounded-lg p-12 text-center">
+  <!-- Scheduled Pickup Message -->
+  <div *ngIf="notification?.pickupDate" class="space-y-6">
+            <h2 class="text-2xl font-bold text-[var(--color-text)]">
+              {{ 'notifications.scheduledPickup' | translate }}
+            </h2>
+    
+            <div class="text-xl text-[var(--color-text)]">
+              <p class="font-semibold">{{ 'notifications.sunday' | translate }} {{ notification?.pickupDate }}</p>
+              <p class="font-bold text-2xl mt-2">{{ notification?.pickupTime }}</p>
+            </div>
+
+            <p class="text-xl font-semibold text-[var(--color-text)] mt-8">
+              {{ 'notifications.at' | translate }} {{ notification?.warehouse }}
+            </p>
+
+    <!-- Action Buttons -->
+    <div class="flex justify-center gap-4 mt-12">
+      <button 
+        (click)="onProposeNewTime()"
+        class="px-8 py-3 bg-[#D0B888] text-white text-sm font-medium rounded-lg hover:bg-[#BEA06E] transition-colors">
+                {{ 'notifications.proposeNewTime' | translate }}
+      </button>
+      <button 
+        (click)="onConfirmPickup()"
+        class="px-8 py-3 bg-[#D0B888] text-white text-sm font-medium rounded-lg hover:bg-[#BEA06E] transition-colors">
+        {{ 'common.confirm' | translate }}
+      </button>
+    </div>
+  </div>
+
+  <!-- Propose New Time Form -->
+  <div *ngIf="!notification?.pickupDate" class="max-w-md mx-auto space-y-6">
+    <div class="flex items-center gap-4">
+              <label class="text-sm font-semibold text-[var(--color-text)] min-w-[120px] text-left">{{ 'notifications.pickupDate' | translate }}</label>
+      <input
+        type="text"
+        [ngModel]="proposedDate"
+        (ngModelChange)="onProposedDateChange($event)"
+        placeholder="20/7/2025"
+        class="flex-1 px-4 py-2.5 border border-[var(--color-border)] rounded-lg text-sm text-[var(--color-text)] bg-white focus:outline-none focus:ring-2 focus:ring-[#D0B888]">
+    </div>
+
+    <div class="flex items-center gap-4">
+              <label class="text-sm font-semibold text-[var(--color-text)] min-w-[120px] text-left">{{ 'notifications.pickupTime' | translate }}</label>
+      <input
+        type="text"
+        [ngModel]="proposedTime"
+        (ngModelChange)="onProposedTimeChange($event)"
+        placeholder="11:00 AM"
+        class="flex-1 px-4 py-2.5 border border-[var(--color-border)] rounded-lg text-sm text-[var(--color-text)] bg-white focus:outline-none focus:ring-2 focus:ring-[#D0B888]">
+    </div>
+
+    <div class="flex justify-center mt-8">
+      <button 
+        (click)="onConfirmPickup()"
+        class="px-8 py-3 bg-[#D0B888] text-white text-sm font-medium rounded-lg hover:bg-[#BEA06E] transition-colors">
+        {{ 'common.confirm' | translate }}
+      </button>
+    </div>
+  </div>
+</div>
+

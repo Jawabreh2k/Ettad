@@ -1,0 +1,168 @@
+<app-modal
+  [isOpen]="isOpen"
+  [title]="title"
+  size="lg"
+  [scrollable]="true"
+  (closed)="close()"
+>
+  <form [formGroup]="roleForm" (ngSubmit)="onSubmit()">
+    <!-- Error Message -->
+    <div *ngIf="errorMessage" class="mb-4 p-3 bg-[var(--color-error)]/10 border border-[var(--color-error)] rounded-lg">
+      <p class="text-sm text-[var(--color-error)]">{{ errorMessage }}</p>
+    </div>
+
+    <div class="space-y-6">
+      <!-- Basic Information -->
+      <div class="space-y-4">
+        <h3 class="text-lg font-semibold text-[var(--color-text)]">Basic Information</h3>
+        
+        <!-- Name -->
+        <div>
+          <label class="block text-sm font-medium text-[var(--color-text)] mb-2">
+            Role Name <span class="text-[var(--color-error)]">*</span>
+          </label>
+          <input
+            type="text"
+            formControlName="name"
+            placeholder="e.g., Asset Manager"
+            class="w-full px-3 py-2 border border-[var(--color-border)] rounded-lg focus:ring-2 focus:ring-[var(--color-accent)] focus:border-transparent outline-none"
+            [class.border-[var(--color-error)]]="roleForm.get('name')?.invalid && roleForm.get('name')?.touched"
+          />
+          <p *ngIf="getFieldError('name')" class="mt-1 text-sm text-[var(--color-error)]">
+            {{ getFieldError('name') }}
+          </p>
+        </div>
+
+        <!-- Description -->
+        <div>
+          <label class="block text-sm font-medium text-[var(--color-text)] mb-2">
+            Description <span class="text-[var(--color-error)]">*</span>
+          </label>
+          <textarea
+            formControlName="description"
+            rows="3"
+            placeholder="Describe the role's purpose and responsibilities"
+            class="w-full px-3 py-2 border border-[var(--color-border)] rounded-lg focus:ring-2 focus:ring-[var(--color-accent)] focus:border-transparent outline-none resize-none"
+            [class.border-[var(--color-error)]]="roleForm.get('description')?.invalid && roleForm.get('description')?.touched"
+          ></textarea>
+          <p *ngIf="getFieldError('description')" class="mt-1 text-sm text-[var(--color-error)]">
+            {{ getFieldError('description') }}
+          </p>
+        </div>
+
+        <!-- Role Type -->
+        <div>
+          <label class="block text-sm font-medium text-[var(--color-text)] mb-2">
+            Role Type <span class="text-[var(--color-error)]">*</span>
+          </label>
+          <select
+            formControlName="roleType"
+            class="w-full px-3 py-2 border border-[var(--color-border)] rounded-lg focus:ring-2 focus:ring-[var(--color-accent)] focus:border-transparent outline-none"
+          >
+            <option *ngFor="let type of roleTypes" [value]="type.value">{{ type.label }}</option>
+          </select>
+        </div>
+
+        <!-- Checkboxes -->
+        <div class="flex gap-6">
+          <label class="flex items-center gap-2 cursor-pointer">
+            <input
+              type="checkbox"
+              formControlName="isDefault"
+              class="w-4 h-4 text-[var(--color-accent)] border-[var(--color-border)] rounded focus:ring-2 focus:ring-[var(--color-accent)]"
+            />
+            <span class="text-sm text-[var(--color-text)]">Set as default role</span>
+          </label>
+
+          <label class="flex items-center gap-2 cursor-pointer">
+            <input
+              type="checkbox"
+              formControlName="isActive"
+              class="w-4 h-4 text-[var(--color-accent)] border-[var(--color-border)] rounded focus:ring-2 focus:ring-[var(--color-accent)]"
+            />
+            <span class="text-sm text-[var(--color-text)]">Active</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Permissions -->
+      <div class="space-y-4">
+        <div class="flex items-center justify-between">
+          <h3 class="text-lg font-semibold text-[var(--color-text)]">Permissions</h3>
+          <span class="text-sm text-[var(--color-text-muted)]">
+            {{ getSelectedPermissionsCount() }} permissions selected
+          </span>
+        </div>
+
+        <div class="space-y-3 max-h-[400px] overflow-y-auto pr-2">
+          <div *ngFor="let group of permissionGroups" class="border border-[var(--color-border)] rounded-lg p-4">
+            <!-- Group Header -->
+            <div class="flex items-center justify-between mb-3">
+              <div class="flex items-center gap-2">
+                <label class="flex items-center gap-2 cursor-pointer">
+                  <div class="relative">
+                    <input
+                      type="checkbox"
+                      [checked]="isGroupFullySelected(group)"
+                      [indeterminate]="isGroupPartiallySelected(group)"
+                      (change)="toggleGroupPermissions(group)"
+                      class="w-4 h-4 text-[var(--color-accent)] border-[var(--color-border)] rounded focus:ring-2 focus:ring-[var(--color-accent)]"
+                    />
+                  </div>
+                  <span class="font-medium text-[var(--color-text)]">{{ group.displayName }}</span>
+                </label>
+              </div>
+              <button
+                type="button"
+                (click)="group.isExpanded = !group.isExpanded"
+                class="text-xs text-[var(--color-accent)] hover:underline"
+              >
+                {{ group.isExpanded ? 'Collapse' : 'Expand' }}
+              </button>
+            </div>
+
+            <p class="text-sm text-[var(--color-text-muted)] mb-3">{{ group.description }}</p>
+
+            <!-- Permissions List -->
+            <div *ngIf="group.isExpanded !== false" class="grid grid-cols-1 md:grid-cols-2 gap-2 pl-6">
+              <label
+                *ngFor="let permission of group.permissions"
+                class="flex items-start gap-2 cursor-pointer p-2 rounded hover:bg-[var(--color-background-hover)] transition-colors"
+              >
+                <input
+                  type="checkbox"
+                  [checked]="permission.isSelected"
+                  (change)="togglePermission(permission)"
+                  class="mt-0.5 w-4 h-4 text-[var(--color-accent)] border-[var(--color-border)] rounded focus:ring-2 focus:ring-[var(--color-accent)]"
+                />
+                <div class="flex-1">
+                  <div class="text-sm text-[var(--color-text)]">{{ permission.displayName }}</div>
+                  <div class="text-xs text-[var(--color-text-muted)]">{{ permission.description }}</div>
+                </div>
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+
+  <!-- Footer -->
+  <div modal-footer class="flex gap-3">
+    <app-button
+      variant="outline"
+      (clicked)="close()"
+      [disabled]="isLoading"
+    >
+      Cancel
+    </app-button>
+    <app-button
+      variant="primary"
+      (clicked)="onSubmit()"
+      [disabled]="isLoading || roleForm.invalid"
+    >
+      {{ isLoading ? 'Saving...' : (mode === 'create' ? 'Create Role' : 'Update Role') }}
+    </app-button>
+  </div>
+</app-modal>
+
