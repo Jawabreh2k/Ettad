@@ -7,3 +7,5 @@ export * from './user.model';
 export * from './api-response.model';
 export * from './auth.model';
 export * from './backend-user.model';
+export * from './warehouse.model';
+export * from './warehouse-inventory.model';

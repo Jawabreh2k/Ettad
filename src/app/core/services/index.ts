@@ -8,3 +8,4 @@ export * from './storage.service';
 export * from './translation.service';
 export * from './backend-auth.service';
 export * from './backend-user.service';
+export * from './warehouse.service';

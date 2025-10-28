@@ -18,10 +18,13 @@
     "loading": "Loading...",
     "noData": "No data available",
     "error": "An error occurred",
-    "success": "Operation completed successfully"
+    "success": "Operation completed successfully",
+    "retry": "Retry",
+    "view": "View"
   },
   "nav": {
     "dashboard": "Dashboard",
+    "warehouse": "Warehouse",
     "newIssueRequest": "New Issue Request",
     "returnRequest": "Return Request",
     "discardRequest": "Discard Request",
@@ -192,6 +195,44 @@
   },
   "footer": {
     "copyright": "Copyright © Barzan Holdings 2024"
+  },
+  "warehouse": {
+    "title": "General Headquarters Warehouse",
+    "subtitle": "Warehouse inventory overview and management",
+    "consumed": "Consumed",
+    "totalCapacity": "Total Capacity",
+    "currentStock": "Current Stock",
+    "noWarehouses": "No Warehouses Available",
+    "noWarehousesDescription": "There are currently no warehouses configured in the system.",
+    "viewDetails": "View Details",
+    "refresh": "Refresh"
+  },
+  "warehouseInventory": {
+    "inventory": "Inventory",
+    "backToWarehouses": "Back to Warehouses",
+    "caliber": "CALIBER",
+    "nature": "NATURE",
+    "supplier": "SUPPLIER",
+    "lot": "LOT",
+    "quantity": "QUANTITY",
+    "expiryDate": "EXPIRY DATE",
+    "actions": "ACTIONS",
+    "showing": "Showing",
+    "of": "of",
+    "netExplosiveQuantity": "Net Explosive Quantity (NEQ)",
+    "removeItem": "Remove Item",
+    "noItems": "No inventory items found",
+    "noItemsDescription": "This warehouse currently has no inventory items.",
+    "itemDetails": "Item Details",
+    "itemId": "Item ID",
+    "neq": "NEQ",
+    "status": "Status",
+    "active": "Active",
+    "inactive": "Inactive",
+    "warehouseId": "Warehouse ID",
+    "createdAt": "Created",
+    "updatedAt": "Last Updated",
+    "additionalInfo": "Additional Information"
   }
 }
 

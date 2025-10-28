@@ -59,6 +59,15 @@ export const API_ENDPOINTS = {
     BASE: '/lookups',
     BY_TYPE: (type: string) => `/lookups/${type}`,
   },
+  
+  // Warehouse Management
+  WAREHOUSES: {
+    BASE: '/warehouses',
+    BY_ID: (id: string) => `/warehouses/${id}`,
+    SUMMARY: '/warehouses/summary',
+    INVENTORY: (id: string) => `/warehouses/${id}/inventory`,
+    INVENTORY_PAGINATED: (id: string) => `/warehouses/${id}/inventory/paginated`,
+  },
 } as const;
 
 export const STORAGE_KEYS = {
