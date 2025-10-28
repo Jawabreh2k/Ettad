@@ -1,0 +1,136 @@
+<div class="min-h-screen bg-white p-8">
+  <div class="max-w-7xl mx-auto">
+    <!-- Header -->
+    <div class="mb-12">
+      <h1 class="text-4xl font-bold text-gray-900 mb-4">
+        {{ 'warehouse.title' | translate }}
+      </h1>
+    </div>
+
+    <!-- Loading State -->
+    <div *ngIf="loading" class="flex justify-center items-center py-20">
+      <div class="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-600"></div>
+    </div>
+
+    <!-- Error State -->
+    <div *ngIf="error && !loading" class="bg-red-50 border border-red-200 rounded-lg p-6 mb-8">
+      <div class="flex">
+        <div class="flex-shrink-0">
+          <svg class="h-6 w-6 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+          </svg>
+        </div>
+        <div class="ml-3">
+          <h3 class="text-lg font-medium text-red-800">
+            {{ 'common.error' | translate }}
+          </h3>
+          <div class="mt-2 text-sm text-red-700">
+            {{ error }}
+          </div>
+          <div class="mt-4">
+            <button 
+              (click)="refreshWarehouses()"
+              class="bg-red-100 px-4 py-2 rounded-md text-sm font-medium text-red-800 hover:bg-red-200 transition-colors">
+              {{ 'common.retry' | translate }}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Warehouse Cards -->
+    <div *ngIf="!loading && !error" class="grid grid-cols-1 gap-6 max-w-4xl mx-auto">
+      <div 
+        *ngFor="let warehouse of warehouses" 
+        class="bg-white border border-gray-200 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 p-8">
+        
+        <!-- Warehouse Emblem and Name -->
+        <div class="flex items-center mb-8">
+          <!-- Military Emblem with Logo -->
+          <div class="w-20 h-20 bg-gradient-to-br from-red-800 to-red-900 rounded-full flex items-center justify-center border-4 border-yellow-400 shadow-lg mr-6 overflow-hidden military-emblem">
+            <img 
+              src="assets/image 8.png" 
+              alt="ETTAD Logo" 
+              class="warehouse-logo"
+              loading="lazy">
+          </div>
+          <div class="flex-1">
+            <h3 class="text-2xl font-bold text-gray-900 mb-2">{{ warehouse.name }}</h3>
+            <p class="text-gray-600">{{ warehouse.code }}</p>
+          </div>
+        </div>
+
+        <!-- Progress Bars and Info -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <!-- Progress Bars -->
+          <div class="space-y-6">
+            <!-- NEQ Progress -->
+            <div>
+              <div class="flex justify-between items-center mb-3">
+                <span class="text-sm font-semibold text-gray-700">NEQ</span>
+                <span class="text-lg font-bold text-orange-600">{{ warehouse.neqPercentage }}%</span>
+              </div>
+              <div class="w-full bg-gray-200 rounded-full h-3">
+                <div 
+                  class="bg-gradient-to-r from-orange-500 to-orange-600 h-3 rounded-full transition-all duration-500"
+                  [style.width.%]="warehouse.neqPercentage">
+                </div>
+              </div>
+            </div>
+
+            <!-- Consumed Progress -->
+            <div>
+              <div class="flex justify-between items-center mb-3">
+                <span class="text-sm font-semibold text-gray-700">{{ 'warehouse.consumed' | translate }}</span>
+                <span class="text-lg font-bold text-green-600">{{ warehouse.consumedPercentage }}%</span>
+              </div>
+              <div class="w-full bg-gray-200 rounded-full h-3">
+                <div 
+                  class="bg-gradient-to-r from-green-500 to-green-600 h-3 rounded-full transition-all duration-500"
+                  [style.width.%]="warehouse.consumedPercentage">
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Warehouse Info -->
+          <div class="space-y-4">
+            <div class="bg-gray-50 rounded-lg p-4">
+              <div class="grid grid-cols-2 gap-4 text-sm">
+                <div>
+                  <span class="text-gray-500">{{ 'warehouse.totalCapacity' | translate }}:</span>
+                  <span class="font-medium text-gray-900 ml-1">{{ warehouse.totalCapacity | number }}</span>
+                </div>
+                <div>
+                  <span class="text-gray-500">{{ 'warehouse.currentStock' | translate }}:</span>
+                  <span class="font-medium text-gray-900 ml-1">{{ warehouse.currentStock | number }}</span>
+                </div>
+              </div>
+            </div>
+            
+            <!-- View Button -->
+            <div class="flex justify-end">
+              <button 
+                (click)="onViewWarehouse(warehouse.id)"
+                class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-8 rounded-lg transition-colors duration-200 flex items-center space-x-2 shadow-md hover:shadow-lg">
+                <lucide-angular [img]="Eye" class="w-5 h-5"></lucide-angular>
+                <span>{{ 'common.view' | translate }}</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Empty State -->
+    <div *ngIf="!loading && !error && warehouses.length === 0" class="text-center py-20">
+      <div class="w-32 h-32 mx-auto mb-6 bg-gray-100 rounded-full flex items-center justify-center">
+        <svg class="w-16 h-16 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+        </svg>
+      </div>
+      <h3 class="text-2xl font-medium text-gray-900 mb-4">{{ 'warehouse.noWarehouses' | translate }}</h3>
+      <p class="text-gray-500 text-lg">{{ 'warehouse.noWarehousesDescription' | translate }}</p>
+    </div>
+  </div>
+</div>

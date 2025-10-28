@@ -18,10 +18,13 @@
     "loading": "جاري التحميل...",
     "noData": "لا توجد بيانات متاحة",
     "error": "حدث خطأ",
-    "success": "تمت العملية بنجاح"
+    "success": "تمت العملية بنجاح",
+    "retry": "إعادة المحاولة",
+    "view": "عرض"
   },
   "nav": {
     "dashboard": "لوحة التحكم",
+    "warehouse": "المستودع",
     "newIssueRequest": "طلب إصدار جديد",
     "returnRequest": "طلب إرجاع",
     "discardRequest": "طلب إتلاف",
@@ -191,6 +194,34 @@
   },
   "footer": {
     "copyright": "حقوق النشر © بارزان القابضة 2024"
+  },
+  "warehouse": {
+    "title": "مستودع المقر العام",
+    "subtitle": "نظرة عامة على مخزون المستودع وإدارته",
+    "consumed": "مستهلك",
+    "totalCapacity": "السعة الإجمالية",
+    "currentStock": "المخزون الحالي",
+    "noWarehouses": "لا توجد مستودعات متاحة",
+    "noWarehousesDescription": "لا توجد مستودعات مكونة حالياً في النظام.",
+    "viewDetails": "عرض التفاصيل",
+    "refresh": "تحديث"
+  },
+  "warehouseInventory": {
+    "inventory": "المخزون",
+    "backToWarehouses": "العودة إلى المستودعات",
+    "caliber": "العيار",
+    "nature": "الطبيعة",
+    "supplier": "المورد",
+    "lot": "الدفعة",
+    "quantity": "الكمية",
+    "expiryDate": "تاريخ الانتهاء",
+    "actions": "الإجراءات",
+    "showing": "عرض",
+    "of": "من",
+    "netExplosiveQuantity": "الكمية الصافية من المتفجرات (NEQ)",
+    "removeItem": "إزالة العنصر",
+    "noItems": "لم يتم العثور على عناصر مخزون",
+    "noItemsDescription": "هذا المستودع لا يحتوي حالياً على عناصر مخزون."
   }
 }
 

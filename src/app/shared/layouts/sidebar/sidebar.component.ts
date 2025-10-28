@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 import { Subject, takeUntil } from 'rxjs';
-import { LucideAngularModule, LayoutDashboard, Users, ChevronLeft, ChevronRight, List, Shield, Search, FileText, Plus, TrendingUp, File, RotateCcw, Settings } from 'lucide-angular';
+import { LucideAngularModule, LayoutDashboard, Users, ChevronLeft, ChevronRight, List, Shield, Search, FileText, Plus, TrendingUp, File, RotateCcw, Settings, Warehouse } from 'lucide-angular';
 import { BackendAuthService } from '@services/backend-auth.service';
 
 interface MenuItem {
@@ -39,6 +39,12 @@ export class SidebarComponent implements OnInit, OnDestroy {
       icon: LayoutDashboard,
       route: '/dashboard',
       permissions: ['dashboard.view']
+    },
+    {
+      label: 'nav.warehouse',
+      icon: Warehouse,
+      route: '/warehouse',
+      permissions: ['warehouse.view']
     },
     {
       label: "nav.newIssueRequest",

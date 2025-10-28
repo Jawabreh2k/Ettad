@@ -19,6 +19,18 @@ export const routes: Routes = [
         loadComponent: () => import('@pages/dashboard/dashboard.component').then(m => m.DashboardComponent)
       },
       {
+        path: 'warehouse',
+        loadComponent: () => import('@pages/warehouse/warehouse.component').then(m => m.WarehouseComponent),
+        canActivate: [permissionGuard],
+        data: { permissions: ['warehouse.view'] }
+      },
+      {
+        path: 'warehouse/:id/inventory',
+        loadComponent: () => import('@pages/warehouse-inventory/warehouse-inventory.component').then(m => m.WarehouseInventoryComponent),
+        canActivate: [permissionGuard],
+        data: { permissions: ['warehouse.view'] }
+      },
+      {
         path: 'new-issue-request',
         loadComponent: () => import('@pages/new-issue-request/new-issue-request.component').then(m => m.NewIssueRequestComponent),
         canActivate: [permissionGuard],
