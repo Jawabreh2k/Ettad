@@ -221,7 +221,17 @@
     "netExplosiveQuantity": "الكمية الصافية من المتفجرات (NEQ)",
     "removeItem": "إزالة العنصر",
     "noItems": "لم يتم العثور على عناصر مخزون",
-    "noItemsDescription": "هذا المستودع لا يحتوي حالياً على عناصر مخزون."
+    "noItemsDescription": "هذا المستودع لا يحتوي حالياً على عناصر مخزون.",
+    "itemDetails": "تفاصيل العنصر",
+    "itemId": "معرف العنصر",
+    "neq": "NEQ",
+    "status": "الحالة",
+    "active": "نشط",
+    "inactive": "غير نشط",
+    "warehouseId": "معرف المستودع",
+    "createdAt": "تاريخ الإنشاء",
+    "updatedAt": "آخر تحديث",
+    "additionalInfo": "معلومات إضافية"
   }
 }
 

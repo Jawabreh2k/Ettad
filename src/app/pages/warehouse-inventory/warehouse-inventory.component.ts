@@ -1,9 +1,10 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { RouterModule, ActivatedRoute, Router } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 import { Subject, takeUntil } from 'rxjs';
-import { LucideAngularModule, ArrowLeft, ChevronLeft, ChevronRight, Minus } from 'lucide-angular';
+import { LucideAngularModule, ArrowLeft, ChevronLeft, ChevronRight, ChevronDown } from 'lucide-angular';
 import { WarehouseService } from '@services/warehouse.service';
 import { 
   WarehouseInventoryItem, 
@@ -12,11 +13,12 @@ import {
   WarehouseInventorySummary 
 } from '@models/warehouse-inventory.model';
 import { WarehouseDto } from '@models/warehouse.model';
+import { ItemDetailsModalComponent } from './components/item-details-modal/item-details-modal.component';
 
 @Component({
   selector: 'app-warehouse-inventory',
   standalone: true,
-  imports: [CommonModule, RouterModule, LucideAngularModule, TranslateModule],
+  imports: [CommonModule, FormsModule, RouterModule, LucideAngularModule, TranslateModule, ItemDetailsModalComponent],
   templateUrl: './warehouse-inventory.component.html',
   styleUrls: ['./warehouse-inventory.component.css']
 })
@@ -27,6 +29,8 @@ export class WarehouseInventoryComponent implements OnInit, OnDestroy {
   inventorySummary: WarehouseInventorySummary | null = null;
   loading = true;
   error: string | null = null;
+  isModalOpen = false;
+  selectedItem: WarehouseInventoryItem | null = null;
 
   // Pagination
   currentPage = 1;
@@ -37,7 +41,7 @@ export class WarehouseInventoryComponent implements OnInit, OnDestroy {
   readonly ArrowLeft = ArrowLeft;
   readonly ChevronLeft = ChevronLeft;
   readonly ChevronRight = ChevronRight;
-  readonly Minus = Minus;
+  readonly ChevronDown = ChevronDown;
 
   private destroy$ = new Subject<void>();
 
@@ -223,9 +227,23 @@ export class WarehouseInventoryComponent implements OnInit, OnDestroy {
     this.router.navigate(['/warehouse']);
   }
 
-  onRemoveItem(itemId: string): void {
-    console.log('Remove item:', itemId);
-    // Implement remove functionality
+  onViewItem(itemId: string): void {
+    const item = this.inventoryItems.find(i => i.id === itemId);
+    if (item) {
+      this.selectedItem = item;
+      this.isModalOpen = true;
+    }
+  }
+
+  onCloseModal(): void {
+    this.isModalOpen = false;
+    this.selectedItem = null;
+  }
+
+  onPageSizeChange(newSize: number): void {
+    this.pageSize = newSize;
+    this.currentPage = 1; // Reset to first page
+    this.loadWarehouseInventory();
   }
 
   formatDate(date: Date): string {

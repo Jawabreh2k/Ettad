@@ -222,7 +222,17 @@
     "netExplosiveQuantity": "Net Explosive Quantity (NEQ)",
     "removeItem": "Remove Item",
     "noItems": "No inventory items found",
-    "noItemsDescription": "This warehouse currently has no inventory items."
+    "noItemsDescription": "This warehouse currently has no inventory items.",
+    "itemDetails": "Item Details",
+    "itemId": "Item ID",
+    "neq": "NEQ",
+    "status": "Status",
+    "active": "Active",
+    "inactive": "Inactive",
+    "warehouseId": "Warehouse ID",
+    "createdAt": "Created",
+    "updatedAt": "Last Updated",
+    "additionalInfo": "Additional Information"
   }
 }
 
