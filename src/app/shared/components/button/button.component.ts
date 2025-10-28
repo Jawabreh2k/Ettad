@@ -30,7 +30,7 @@ export class ButtonComponent {
 
     const variantClasses = {
       primary: 'bg-[var(--color-brand)] text-white hover:bg-[var(--color-brand-dark)] focus:ring-[var(--color-brand)]',
-      secondary: 'bg-[var(--color-accent)] text-white hover:opacity-90 focus:ring-[var(--color-accent)]',
+      secondary: 'bg-[var(--color-text-muted)] text-white hover:bg-[var(--color-text)] focus:ring-[var(--color-text-muted)]',
       outline: 'border-2 border-[var(--color-border)] text-[var(--color-text)] hover:bg-[var(--color-background-hover)] focus:ring-[var(--color-border)]',
       ghost: 'text-[var(--color-text)] hover:bg-[var(--color-background-hover)] focus:ring-[var(--color-background-active)]',
       danger: 'bg-[var(--color-error)] text-white hover:opacity-90 focus:ring-[var(--color-error)]'

@@ -131,3 +131,19 @@ html, body {
   direction: ltr;
 }
 
+/* Form Elements - Remove browser defaults while preserving custom focus styles */
+input,
+textarea,
+select {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  outline: none;
+}
+
+/* Firefox specific focus ring removal */
+input::-moz-focus-inner,
+button::-moz-focus-inner {
+  border: 0;
+}
+

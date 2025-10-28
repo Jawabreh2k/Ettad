@@ -6,12 +6,15 @@ import { ButtonComponent } from '@components/button/button.component';
 import { LucideAngularModule, Save, X } from 'lucide-angular';
 
 interface AssetForm {
-  name: string;
-  category: string;
-  serialNumber: string;
-  location: string;
-  status: string;
-  description: string;
+  productName: string;
+  productId: string;
+  nature: string;
+  supplier: string;
+  quantity: string;
+  lot: string;
+  expiryDate: string;
+  warehouse: string;
+  image?: File;
 }
 
 @Component({
@@ -25,45 +28,96 @@ export class AddAssetComponent implements OnInit {
   readonly Save = Save;
   readonly X = X;
 
+  previewUrl: string | null = null;
+
   assetForm: AssetForm = {
-    name: '',
-    category: '',
-    serialNumber: '',
-    location: '',
-    status: 'active',
-    description: ''
+    productName: '',
+    productId: '',
+    nature: '',
+    supplier: '',
+    quantity: '',
+    lot: '',
+    expiryDate: '',
+    warehouse: '',
+    image: undefined
   };
 
-  categories = ['Laptop', 'Desktop', 'Monitor', 'Printer', 'Phone', 'Tablet', 'Other'];
-  statuses = ['Active', 'Inactive', 'Maintenance', 'Retired'];
-  locations = ['Office A', 'Office B', 'Warehouse', 'Remote', 'Other'];
+  warehouses = [
+    'DOH-01',
+    'DOH-02', 
+    'DOH-03',
+    'KWI-01',
+    'KWI-02',
+    'BAH-01',
+    'BAH-02'
+  ];
 
   ngOnInit(): void {
     // Component initialization
   }
 
   onSubmit(): void {
+    console.log('Asset form submitted:', this.assetForm);
     // TODO: Implement asset submission logic
-    // Reset form after submission
-    this.assetForm = {
-      name: '',
-      category: '',
-      serialNumber: '',
-      location: '',
-      status: 'active',
-      description: ''
-    };
+    this.resetForm();
   }
 
   onCancel(): void {
-    // Reset form
-    this.assetForm = {
-      name: '',
-      category: '',
-      serialNumber: '',
-      location: '',
-      status: 'active',
-      description: ''
+    this.resetForm();
+  }
+
+  triggerFileInput(): void {
+    const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
+    fileInput?.click();
+  }
+
+  onFileSelect(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files.length > 0) {
+      const file = input.files[0];
+      this.assetForm.image = file;
+      this.generatePreview(file);
+    }
+  }
+
+  onDragOver(event: DragEvent): void {
+    event.preventDefault();
+  }
+
+  onDrop(event: DragEvent): void {
+    event.preventDefault();
+    const files = event.dataTransfer?.files;
+    if (files && files.length > 0) {
+      const file = files[0];
+      this.assetForm.image = file;
+      this.generatePreview(file);
+    }
+  }
+
+  private generatePreview(file: File): void {
+    if (!file.type.startsWith('image/')) {
+      this.previewUrl = null;
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = () => {
+      this.previewUrl = reader.result as string;
     };
+    reader.readAsDataURL(file);
+  }
+
+  private resetForm(): void {
+    this.assetForm = {
+      productName: '',
+      productId: '',
+      nature: '',
+      supplier: '',
+      quantity: '',
+      lot: '',
+      expiryDate: '',
+      warehouse: '',
+      image: undefined
+    };
+    this.previewUrl = null;
   }
 }

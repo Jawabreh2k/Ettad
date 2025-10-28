@@ -9,7 +9,7 @@
         type="text"
         formControlName="name"
         placeholder="Enter role name"
-        class="w-full px-4 py-2.5 border-2 border-[var(--color-border)] rounded-lg focus:outline-none focus:border-[var(--color-accent)] focus:ring-4 focus:ring-[var(--color-accent)]/10 transition-all"
+        class="w-full px-4 py-2.5 border-2 border-[var(--color-border)] rounded-lg focus:outline-none focus:border-[var(--color-brand)] focus:ring-4 focus:ring-[var(--color-brand)]/20 transition-all"
         [class.border-[var(--color-error)]]="roleForm.get('name')?.invalid && roleForm.get('name')?.touched"
       />
       <p *ngIf="getFieldError('name')" class="mt-2 text-sm text-[var(--color-error)]">
@@ -23,7 +23,7 @@
         type="checkbox"
         id="isSuperAdmin"
         formControlName="isSuperAdmin"
-        class="h-4 w-4 rounded border-2 border-[var(--color-border)] text-[var(--color-accent)] focus:ring-2 focus:ring-[var(--color-accent)]/20"
+        class="h-4 w-4 rounded border-2 border-[var(--color-border)] text-[var(--color-brand)] focus:ring-2 focus:ring-[var(--color-brand)]/20"
       />
       <label for="isSuperAdmin" class="text-sm font-medium text-[var(--color-text)]">
         Super Administrator (Full Access)
@@ -36,7 +36,7 @@
         type="checkbox"
         id="isDefaultRole"
         formControlName="isDefaultRole"
-        class="h-4 w-4 rounded border-2 border-[var(--color-border)] text-[var(--color-accent)] focus:ring-2 focus:ring-[var(--color-accent)]/20"
+        class="h-4 w-4 rounded border-2 border-[var(--color-border)] text-[var(--color-brand)] focus:ring-2 focus:ring-[var(--color-brand)]/20"
       />
       <label for="isDefaultRole" class="text-sm font-medium text-[var(--color-text)]">
         Default Role (Auto-assigned to new users)

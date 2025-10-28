@@ -9,7 +9,7 @@
         type="text"
         formControlName="userName"
         placeholder="Enter username or email"
-        class="w-full px-4 py-2.5 border-2 border-[var(--color-border)] rounded-lg focus:outline-none focus:border-[var(--color-accent)] focus:ring-4 focus:ring-[var(--color-accent)]/10 transition-all"
+        class="w-full px-4 py-2.5 border-2 border-[var(--color-border)] rounded-lg focus:outline-none focus:border-[var(--color-brand)] focus:ring-4 focus:ring-[var(--color-brand)]/20 transition-all"
         [class.border-[var(--color-error)]]="userForm.get('userName')?.invalid && userForm.get('userName')?.touched"
       />
       <p *ngIf="getFieldError('userName')" class="mt-2 text-sm text-[var(--color-error)]">
@@ -26,7 +26,7 @@
         type="password"
         formControlName="password"
         placeholder="Enter password"
-        class="w-full px-4 py-2.5 border-2 border-[var(--color-border)] rounded-lg focus:outline-none focus:border-[var(--color-accent)] focus:ring-4 focus:ring-[var(--color-accent)]/10 transition-all"
+        class="w-full px-4 py-2.5 border-2 border-[var(--color-border)] rounded-lg focus:outline-none focus:border-[var(--color-brand)] focus:ring-4 focus:ring-[var(--color-brand)]/20 transition-all"
         [class.border-[var(--color-error)]]="userForm.get('password')?.invalid && userForm.get('password')?.touched"
       />
       <p *ngIf="getFieldError('password')" class="mt-2 text-sm text-[var(--color-error)]">
@@ -43,7 +43,7 @@
         type="number"
         formControlName="organizationId"
         placeholder="Enter organization ID"
-        class="w-full px-4 py-2.5 border-2 border-[var(--color-border)] rounded-lg focus:outline-none focus:border-[var(--color-accent)] focus:ring-4 focus:ring-[var(--color-accent)]/10 transition-all"
+        class="w-full px-4 py-2.5 border-2 border-[var(--color-border)] rounded-lg focus:outline-none focus:border-[var(--color-brand)] focus:ring-4 focus:ring-[var(--color-brand)]/20 transition-all"
       />
     </div>
 
@@ -56,7 +56,7 @@
         type="number"
         formControlName="employeeId"
         placeholder="Enter employee ID (optional)"
-        class="w-full px-4 py-2.5 border-2 border-[var(--color-border)] rounded-lg focus:outline-none focus:border-[var(--color-accent)] focus:ring-4 focus:ring-[var(--color-accent)]/10 transition-all"
+        class="w-full px-4 py-2.5 border-2 border-[var(--color-border)] rounded-lg focus:outline-none focus:border-[var(--color-brand)] focus:ring-4 focus:ring-[var(--color-brand)]/20 transition-all"
       />
     </div>
 
@@ -69,7 +69,7 @@
         type="text"
         formControlName="extraEmployeesView"
         placeholder="Enter extra employees view (optional)"
-        class="w-full px-4 py-2.5 border-2 border-[var(--color-border)] rounded-lg focus:outline-none focus:border-[var(--color-accent)] focus:ring-4 focus:ring-[var(--color-accent)]/10 transition-all"
+        class="w-full px-4 py-2.5 border-2 border-[var(--color-border)] rounded-lg focus:outline-none focus:border-[var(--color-brand)] focus:ring-4 focus:ring-[var(--color-brand)]/20 transition-all"
       />
     </div>
 
@@ -79,7 +79,7 @@
         type="checkbox"
         id="isLdapUser"
         formControlName="isLdapUser"
-        class="h-4 w-4 rounded border-2 border-[var(--color-border)] text-[var(--color-accent)] focus:ring-2 focus:ring-[var(--color-accent)]/20"
+        class="h-4 w-4 rounded border-2 border-[var(--color-border)] text-[var(--color-brand)] focus:ring-2 focus:ring-[var(--color-brand)]/20"
       />
       <label for="isLdapUser" class="text-sm font-medium text-[var(--color-text)]">
         LDAP User

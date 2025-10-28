@@ -52,6 +52,15 @@ export class ReturnRequestComponent {
     }
   }
 
+  removeAttachment(): void {
+    this.attachment = null;
+    this.attachmentName = 'No file selected';
+    const fileInput = document.getElementById('fileUpload') as HTMLInputElement;
+    if (fileInput) {
+      fileInput.value = '';
+    }
+  }
+
   triggerFileInput(): void {
     const fileInput = document.getElementById('fileUpload') as HTMLInputElement;
     fileInput?.click();

@@ -55,13 +55,13 @@
         type="text"
         [(ngModel)]="searchTerm"
         placeholder="Search by username or email..."
-        class="w-full pl-10 pr-3 py-2.5 border border-[var(--color-border)] rounded-lg focus:ring-2 focus:ring-[var(--color-accent)] focus:border-transparent outline-none transition-all"
+        class="w-full pl-10 pr-3 py-2.5 border border-[var(--color-border)] rounded-lg focus:ring-2 focus:ring-[var(--color-brand)] focus:border-transparent outline-none transition-all"
       />
     </div>
 
     <select
       [(ngModel)]="selectedRoleId"
-      class="px-3 py-2.5 border border-[var(--color-border)] rounded-lg focus:ring-2 focus:ring-[var(--color-accent)] focus:border-transparent outline-none transition-all bg-white"
+      class="px-3 py-2.5 border border-[var(--color-border)] rounded-lg focus:ring-2 focus:ring-[var(--color-brand)] focus:border-transparent outline-none transition-all bg-white"
     >
       <option value="">All Roles</option>
       <option *ngFor="let role of roles" [value]="role.id">{{ role.name }}</option>

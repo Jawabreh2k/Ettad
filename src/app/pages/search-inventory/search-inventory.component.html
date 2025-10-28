@@ -19,14 +19,14 @@
           type="text"
           [(ngModel)]="searchTerm"
           placeholder="Search items..."
-          class="w-full pl-10 pr-3 py-2 border border-[var(--color-border)] rounded-lg focus:ring-2 focus:ring-[var(--color-accent)] focus:border-transparent outline-none"
+          class="w-full pl-10 pr-3 py-2 border border-[var(--color-border)] rounded-lg focus:ring-2 focus:ring-[var(--color-brand)] focus:border-transparent outline-none"
         />
       </div>
 
       <!-- Category Filter -->
       <select
         [(ngModel)]="selectedCategory"
-        class="px-3 py-2 border border-[var(--color-border)] rounded-lg focus:ring-2 focus:ring-[var(--color-accent)] focus:border-transparent outline-none"
+        class="px-3 py-2 border border-[var(--color-border)] rounded-lg focus:ring-2 focus:ring-[var(--color-brand)] focus:border-transparent outline-none"
       >
         <option *ngFor="let category of categories" [value]="category">{{ category }}</option>
       </select>
@@ -34,7 +34,7 @@
       <!-- Location Filter -->
       <select
         [(ngModel)]="selectedLocation"
-        class="px-3 py-2 border border-[var(--color-border)] rounded-lg focus:ring-2 focus:ring-[var(--color-accent)] focus:border-transparent outline-none"
+        class="px-3 py-2 border border-[var(--color-border)] rounded-lg focus:ring-2 focus:ring-[var(--color-brand)] focus:border-transparent outline-none"
       >
         <option *ngFor="let location of locations" [value]="location">{{ location }}</option>
       </select>
