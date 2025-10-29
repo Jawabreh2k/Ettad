@@ -1,6 +1,6 @@
 import { Directive, Input, TemplateRef, ViewContainerRef, OnInit, OnDestroy } from '@angular/core';
 import { Subject, takeUntil } from 'rxjs';
-import { UserService } from '@services/user.service';
+import { BackendAuthService } from '@services/backend-auth.service';
 import { StorageService } from '@services/storage.service';
 
 /**
@@ -33,7 +33,7 @@ export class HasPermissionDirective implements OnInit, OnDestroy {
   constructor(
     private templateRef: TemplateRef<any>,
     private viewContainer: ViewContainerRef,
-    private userService: UserService,
+    private authService: BackendAuthService,
     private storageService: StorageService
   ) {}
 
@@ -47,62 +47,31 @@ export class HasPermissionDirective implements OnInit, OnDestroy {
   }
 
   private checkPermissions(): void {
-    // Get current user ID
-    const userId = this.storageService.get<string>('current_user_id');
-    
-    if (!userId) {
-      // In development, show content if no user (for testing)
-      console.warn('No user ID found, showing content for development');
+    // Check if user is authenticated
+    if (!this.authService.isAuthenticated()) {
+      this.hideContent();
+      return;
+    }
+
+    const requiredPermissions = Array.isArray(this.appHasPermission) 
+      ? this.appHasPermission 
+      : [this.appHasPermission];
+
+    if (requiredPermissions.length === 0) {
       this.showContent();
       return;
     }
 
-    // Get user and check permissions
-    this.userService.getUserById(userId)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: (user) => {
-          if (!user) {
-            this.hideContent();
-            return;
-          }
+    // Check permissions using the auth service
+    const hasPermission = this.appPermissionMode === 'all'
+      ? this.authService.hasAllPermissions(requiredPermissions)
+      : this.authService.hasAnyPermission(requiredPermissions);
 
-          const requiredPermissions = Array.isArray(this.appHasPermission) 
-            ? this.appHasPermission 
-            : [this.appHasPermission];
-
-          if (requiredPermissions.length === 0) {
-            this.showContent();
-            return;
-          }
-
-          const userPermissions = user.role.permissions.map(p => p.id);
-          
-          let hasPermission = false;
-          
-          if (this.appPermissionMode === 'all') {
-            // User must have ALL specified permissions
-            hasPermission = requiredPermissions.every(perm => 
-              userPermissions.includes(perm)
-            );
-          } else {
-            // User must have ANY of the specified permissions
-            hasPermission = requiredPermissions.some(perm => 
-              userPermissions.includes(perm)
-            );
-          }
-
-          if (hasPermission) {
-            this.showContent();
-          } else {
-            this.hideContent();
-          }
-        },
-        error: (error) => {
-          console.error('Error checking permissions:', error);
-          this.hideContent();
-        }
-      });
+    if (hasPermission) {
+      this.showContent();
+    } else {
+      this.hideContent();
+    }
   }
 
   private showContent(): void {

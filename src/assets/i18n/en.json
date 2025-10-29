@@ -38,7 +38,8 @@
     "manageAdmins": "Manage Admins",
     "adminRoles": "Admin Roles",
     "rolePermissions": "Role Permissions",
-    "notifications": "Notifications"
+    "notifications": "Notifications",
+    "integratedInventoryManagement": "Integrated Inventory Management"
   },
   "dashboard": {
     "title": "Dashboard",
@@ -233,6 +234,31 @@
     "createdAt": "Created",
     "updatedAt": "Last Updated",
     "additionalInfo": "Additional Information"
+  },
+  "addAsset": {
+    "title": "Add Asset",
+    "formTitle": "Add New Asset Form",
+    "productName": "Product Name",
+    "productId": "Product ID",
+    "nature": "Nature",
+    "supplier": "Supplier",
+    "quantity": "Quantity",
+    "lot": "LOT",
+    "expiryDate": "Expiry Date",
+    "warehouse": "Warehouse",
+    "dragImageHere": "Drag image here",
+    "or": "or",
+    "browseImage": "Browse image",
+    "enterProductName": "Enter product name",
+    "enterProductId": "13328",
+    "enterNature": "Enter nature",
+    "enterSupplierName": "Enter supplier name",
+    "enterQuantity": "Enter quantity",
+    "enterLotNumber": "Enter LOT number",
+    "selectExpiryDate": "Select expiry date",
+    "selectWarehouse": "Select warehouse",
+    "discard": "Discard",
+    "addAsset": "Add Asset"
   }
 }
 

@@ -1,13 +1,13 @@
 <div class="min-h-screen flex flex-col">
   <!-- Header -->
   <div class="mb-8">
-    <h1 class="text-3xl font-bold text-[var(--color-text)]">Add Asset</h1>
+    <h1 class="text-3xl font-bold text-[var(--color-text)]">{{ 'addAsset.title' | translate }}</h1>
   </div>
 
   <!-- Centered Form Container -->
   <div class="flex-1 flex items-center justify-center">
     <div class="bg-white rounded-xl shadow-custom-md p-6 w-full max-w-2xl">
-      <h2 class="text-xl font-bold text-[var(--color-text)] mb-6">Add New Asset Form</h2>
+      <h2 class="text-xl font-bold text-[var(--color-text)] mb-6">{{ 'addAsset.formTitle' | translate }}</h2>
     
     <form (ngSubmit)="onSubmit()" class="space-y-6">
       <!-- Image Upload Section -->
@@ -31,8 +31,8 @@
           </ng-template>
         </div>
         <div class="text-left">
-          <p class="text-sm text-[#6B7280]">Drag image here</p>
-          <p class="text-sm text-[#6B7280]">or <span class="text-[var(--color-brand)] cursor-pointer" (click)="triggerFileInput()">Browse image</span></p>
+          <p class="text-sm text-[#6B7280]">{{ 'addAsset.dragImageHere' | translate }}</p>
+          <p class="text-sm text-[#6B7280]">{{ 'addAsset.or' | translate }} <span class="text-[var(--color-brand)] cursor-pointer" (click)="triggerFileInput()">{{ 'addAsset.browseImage' | translate }}</span></p>
         </div>
         <input
           type="file"
@@ -47,97 +47,97 @@
       <div class="space-y-4">
         <!-- Product Name -->
         <div class="flex items-center gap-6">
-          <label class="text-sm font-medium text-[#6B7280] w-28 shrink-0">Product Name</label>
+          <label class="text-sm font-medium text-[#6B7280] w-28 shrink-0">{{ 'addAsset.productName' | translate }}</label>
           <input
             type="text"
             [(ngModel)]="assetForm.productName"
             name="productName"
             class="flex-1 px-4 py-2.5 bg-white rounded-lg border text-sm text-[#23272E] placeholder:text-[#9CA3AF] focus:outline-none focus:ring-2 focus:ring-[var(--color-brand)]"
-            placeholder="Enter product name"
+            [placeholder]="'addAsset.enterProductName' | translate"
           />
         </div>
 
         <!-- Product ID -->
         <div class="flex items-center gap-6">
-          <label class="text-sm font-medium text-[#6B7280] w-28 shrink-0">Product ID</label>
+          <label class="text-sm font-medium text-[#6B7280] w-28 shrink-0">{{ 'addAsset.productId' | translate }}</label>
           <input
             type="text"
             [(ngModel)]="assetForm.productId"
             name="productId"
             class="flex-1 px-4 py-2.5 bg-white rounded-lg border text-sm text-[#23272E] placeholder:text-[#9CA3AF] focus:outline-none focus:ring-2 focus:ring-[var(--color-brand)]"
-            placeholder="13328"
+            [placeholder]="'addAsset.enterProductId' | translate"
           />
         </div>
 
         <!-- Nature -->
         <div class="flex items-center gap-6">
-          <label class="text-sm font-medium text-[#6B7280] w-28 shrink-0">Nature</label>
+          <label class="text-sm font-medium text-[#6B7280] w-28 shrink-0">{{ 'addAsset.nature' | translate }}</label>
           <input
             type="text"
             [(ngModel)]="assetForm.nature"
             name="nature"
             class="flex-1 px-4 py-2.5 bg-white rounded-lg border text-sm text-[#23272E] placeholder:text-[#9CA3AF] focus:outline-none focus:ring-2 focus:ring-[var(--color-brand)]"
-            placeholder="Enter nature"
+            [placeholder]="'addAsset.enterNature' | translate"
           />
         </div>
 
         <!-- Supplier -->
         <div class="flex items-center gap-6">
-          <label class="text-sm font-medium text-[#6B7280] w-28 shrink-0">Supplier</label>
+          <label class="text-sm font-medium text-[#6B7280] w-28 shrink-0">{{ 'addAsset.supplier' | translate }}</label>
           <input
             type="text"
             [(ngModel)]="assetForm.supplier"
             name="supplier"
             class="flex-1 px-4 py-2.5 bg-white rounded-lg border text-sm text-[#23272E] placeholder:text-[#9CA3AF] focus:outline-none focus:ring-2 focus:ring-[var(--color-brand)]"
-            placeholder="Enter supplier name"
+            [placeholder]="'addAsset.enterSupplierName' | translate"
           />
         </div>
 
         <!-- Quantity -->
         <div class="flex items-center gap-6">
-          <label class="text-sm font-medium text-[#6B7280] w-28 shrink-0">Quantity</label>
+          <label class="text-sm font-medium text-[#6B7280] w-28 shrink-0">{{ 'addAsset.quantity' | translate }}</label>
           <input
             type="text"
             [(ngModel)]="assetForm.quantity"
             name="quantity"
             class="flex-1 px-4 py-2.5 bg-white rounded-lg border text-sm text-[#23272E] placeholder:text-[#9CA3AF] focus:outline-none focus:ring-2 focus:ring-[var(--color-brand)]"
-            placeholder="Enter quantity"
+            [placeholder]="'addAsset.enterQuantity' | translate"
           />
         </div>
 
         <!-- LOT -->
         <div class="flex items-center gap-6">
-          <label class="text-sm font-medium text-[#6B7280] w-28 shrink-0">LOT</label>
+          <label class="text-sm font-medium text-[#6B7280] w-28 shrink-0">{{ 'addAsset.lot' | translate }}</label>
           <input
             type="text"
             [(ngModel)]="assetForm.lot"
             name="lot"
             class="flex-1 px-4 py-2.5 bg-white rounded-lg border text-sm text-[#23272E] placeholder:text-[#9CA3AF] focus:outline-none focus:ring-2 focus:ring-[var(--color-brand)]"
-            placeholder="Enter LOT number"
+            [placeholder]="'addAsset.enterLotNumber' | translate"
           />
         </div>
 
         <!-- Expiry Date -->
         <div class="flex items-center gap-6">
-          <label class="text-sm font-medium text-[#6B7280] w-28 shrink-0">Expiry Date</label>
+          <label class="text-sm font-medium text-[#6B7280] w-28 shrink-0">{{ 'addAsset.expiryDate' | translate }}</label>
           <input
             type="date"
             [(ngModel)]="assetForm.expiryDate"
             name="expiryDate"
             class="flex-1 px-4 py-2.5 bg-white rounded-lg border text-sm text-[#23272E] placeholder:text-[#9CA3AF] focus:outline-none focus:ring-2 focus:ring-[var(--color-brand)]"
-            placeholder="Select expiry date"
+            [placeholder]="'addAsset.selectExpiryDate' | translate"
           />
         </div>
 
         <!-- Warehouse -->
         <div class="flex items-center gap-6">
-          <label class="text-sm font-medium text-[#6B7280] w-28 shrink-0">Warehouse</label>
+          <label class="text-sm font-medium text-[#6B7280] w-28 shrink-0">{{ 'addAsset.warehouse' | translate }}</label>
           <select
             [(ngModel)]="assetForm.warehouse"
             name="warehouse"
             class="flex-1 px-4 py-2.5 bg-white rounded-lg border text-sm text-[#23272E] focus:outline-none focus:ring-2 focus:ring-[var(--color-brand)]"
           >
-            <option value="">Select warehouse</option>
+            <option value="">{{ 'addAsset.selectWarehouse' | translate }}</option>
             <option *ngFor="let warehouse of warehouses" [value]="warehouse">{{ warehouse }}</option>
           </select>
         </div>
@@ -150,13 +150,13 @@
           (click)="onCancel()"
           class="px-6 py-2.5 border border-[var(--color-border)] text-[var(--color-text)] rounded-lg hover:bg-[var(--color-background-hover)] transition-colors"
         >
-          Discard
+          {{ 'addAsset.discard' | translate }}
         </button>
         <button
           type="submit"
           class="px-6 py-2.5 bg-[var(--color-brand)] text-white rounded-lg hover:bg-[var(--color-brand-dark)] transition-colors"
         >
-          Add Asset
+          {{ 'addAsset.addAsset' | translate }}
         </button>
       </div>
     </form>

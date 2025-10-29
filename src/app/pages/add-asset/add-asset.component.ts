@@ -1,9 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { TranslateModule } from '@ngx-translate/core';
 import { CardComponent } from '@components/card/card.component';
 import { ButtonComponent } from '@components/button/button.component';
 import { LucideAngularModule, Save, X } from 'lucide-angular';
+import { TranslationService } from '@services/translation.service';
 
 interface AssetForm {
   productName: string;
@@ -20,7 +22,7 @@ interface AssetForm {
 @Component({
   selector: 'app-add-asset',
   standalone: true,
-  imports: [CommonModule, FormsModule, CardComponent, ButtonComponent, LucideAngularModule],
+  imports: [CommonModule, FormsModule, TranslateModule, CardComponent, ButtonComponent, LucideAngularModule],
   templateUrl: './add-asset.component.html',
   styleUrls: ['./add-asset.component.css']
 })
@@ -29,6 +31,8 @@ export class AddAssetComponent implements OnInit {
   readonly X = X;
 
   previewUrl: string | null = null;
+
+  constructor(private translationService: TranslationService) {}
 
   assetForm: AssetForm = {
     productName: '',

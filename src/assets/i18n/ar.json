@@ -37,7 +37,9 @@
     "admin": "الإدارة",
     "manageAdmins": "إدارة المسؤولين",
     "adminRoles": "أدوار المسؤولين",
-    "notifications": "الإشعارات"
+    "rolePermissions": "صلاحيات الأدوار",
+    "notifications": "الإشعارات",
+    "integratedInventoryManagement": "إدارة المخزون المتكاملة"
   },
   "dashboard": {
     "title": "لوحة التحكم",
@@ -232,6 +234,31 @@
     "createdAt": "تاريخ الإنشاء",
     "updatedAt": "آخر تحديث",
     "additionalInfo": "معلومات إضافية"
+  },
+  "addAsset": {
+    "title": "إضافة أصل",
+    "formTitle": "نموذج إضافة أصل جديد",
+    "productName": "اسم المنتج",
+    "productId": "معرف المنتج",
+    "nature": "الطبيعة",
+    "supplier": "المورد",
+    "quantity": "الكمية",
+    "lot": "الدفعة",
+    "expiryDate": "تاريخ الانتهاء",
+    "warehouse": "المستودع",
+    "dragImageHere": "اسحب الصورة هنا",
+    "or": "أو",
+    "browseImage": "تصفح الصورة",
+    "enterProductName": "أدخل اسم المنتج",
+    "enterProductId": "13328",
+    "enterNature": "أدخل الطبيعة",
+    "enterSupplierName": "أدخل اسم المورد",
+    "enterQuantity": "أدخل الكمية",
+    "enterLotNumber": "أدخل رقم الدفعة",
+    "selectExpiryDate": "اختر تاريخ الانتهاء",
+    "selectWarehouse": "اختر المستودع",
+    "discard": "تجاهل",
+    "addAsset": "إضافة أصل"
   }
 }
 

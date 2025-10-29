@@ -6,11 +6,12 @@ import { LucideAngularModule, Bell, User, Languages, LogOut, ChevronDown } from 
 import { TranslationService } from '@services/translation.service';
 import { BackendAuthService } from '@services/backend-auth.service';
 import { AuthenticatedUser } from '@models/auth.model';
+import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-navbar',
   standalone: true,
-  imports: [CommonModule, LucideAngularModule],
+  imports: [CommonModule, LucideAngularModule, TranslateModule],
   templateUrl: './navbar.component.html',
   styleUrls: ['./navbar.component.css']
 })
@@ -89,6 +90,10 @@ export class NavbarComponent implements OnInit, OnDestroy {
 
   getCurrentLanguage(): string {
     return this.translationService.getCurrentLanguage().toUpperCase();
+  }
+
+  get isRTL(): boolean {
+    return this.translationService.isRTL();
   }
 
   logout(): void {
