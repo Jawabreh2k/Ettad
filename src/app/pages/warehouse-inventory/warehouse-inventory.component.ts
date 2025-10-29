@@ -13,12 +13,11 @@ import {
   WarehouseInventorySummary 
 } from '@models/warehouse-inventory.model';
 import { WarehouseDto } from '@models/warehouse.model';
-import { ItemDetailsModalComponent } from './components/item-details-modal/item-details-modal.component';
 
 @Component({
   selector: 'app-warehouse-inventory',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, LucideAngularModule, TranslateModule, ItemDetailsModalComponent],
+  imports: [CommonModule, FormsModule, RouterModule, LucideAngularModule, TranslateModule],
   templateUrl: './warehouse-inventory.component.html',
   styleUrls: ['./warehouse-inventory.component.css']
 })
@@ -29,8 +28,6 @@ export class WarehouseInventoryComponent implements OnInit, OnDestroy {
   inventorySummary: WarehouseInventorySummary | null = null;
   loading = true;
   error: string | null = null;
-  isModalOpen = false;
-  selectedItem: WarehouseInventoryItem | null = null;
 
   // Pagination
   currentPage = 1;
@@ -228,16 +225,7 @@ export class WarehouseInventoryComponent implements OnInit, OnDestroy {
   }
 
   onViewItem(itemId: string): void {
-    const item = this.inventoryItems.find(i => i.id === itemId);
-    if (item) {
-      this.selectedItem = item;
-      this.isModalOpen = true;
-    }
-  }
-
-  onCloseModal(): void {
-    this.isModalOpen = false;
-    this.selectedItem = null;
+    this.router.navigate(['/warehouse', this.warehouseId, 'inventory', itemId]);
   }
 
   onPageSizeChange(newSize: number): void {
