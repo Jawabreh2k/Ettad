@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ButtonComponent } from '@components/button/button.component';
 import { StepperComponent, Step } from '@components/stepper/stepper.component';
 import { CartridgeDetailsComponent, CartridgeDetails } from './components/cartridge-details/cartridge-details.component';
@@ -34,6 +35,11 @@ export class NewIssueRequestComponent implements OnInit {
     { label: 'newIssueRequest.review', completed: false },
     { label: 'newIssueRequest.send', completed: false }
   ];
+
+  constructor(
+    private route: ActivatedRoute,
+    private router: Router
+  ) {}
 
   // Step 1: Selection filters
   bulletDiameters = ['5.56', '7.62', '9mm', '.45'];
@@ -87,6 +93,27 @@ export class NewIssueRequestComponent implements OnInit {
 
   ngOnInit(): void {
     this.filterCartridges();
+    this.initializeStepFromQueryParams();
+  }
+
+  private initializeStepFromQueryParams(): void {
+    this.route.queryParams.subscribe(params => {
+      const stepParam = params['step'];
+      if (stepParam !== undefined) {
+        const step = parseInt(stepParam, 10);
+        if (!isNaN(step) && step >= 0 && step < this.steps.length) {
+          this.currentStep = step;
+        }
+      }
+    });
+  }
+
+  private updateQueryParams(step: number): void {
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { step: step },
+      queryParamsHandling: 'merge'
+    });
   }
 
   filterCartridges(): void {
@@ -118,6 +145,7 @@ export class NewIssueRequestComponent implements OnInit {
 
   onStepChange(step: number): void {
     this.currentStep = step;
+    this.updateQueryParams(step);
   }
 
   onConfirmSelection(): void {
@@ -125,6 +153,7 @@ export class NewIssueRequestComponent implements OnInit {
     if (hasSelection) {
       this.steps[0].completed = true;
       this.currentStep = 1;
+      this.updateQueryParams(1);
     }
   }
 
@@ -132,6 +161,7 @@ export class NewIssueRequestComponent implements OnInit {
     if (this.currentStep < this.steps.length - 1) {
       this.steps[this.currentStep].completed = true;
       this.currentStep++;
+      this.updateQueryParams(this.currentStep);
       
       // Auto-submit order when reaching the Send step
       if (this.currentStep === 3) {
@@ -143,6 +173,7 @@ export class NewIssueRequestComponent implements OnInit {
   onPrevious(): void {
     if (this.currentStep > 0) {
       this.currentStep--;
+      this.updateQueryParams(this.currentStep);
     }
   }
 
@@ -199,5 +230,6 @@ export class NewIssueRequestComponent implements OnInit {
     this.usageTime = '';
     this.requesterName = 'Name';
     this.requesterComments = 'None';
+    this.updateQueryParams(0);
   }
 }

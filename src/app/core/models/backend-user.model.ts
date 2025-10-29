@@ -121,7 +121,7 @@ export interface CrudPermission {
 
 export interface CheckBox {
   displayValue: string;
-  isChecked?: boolean;
+  isSelected?: boolean;
 }
 
 /**

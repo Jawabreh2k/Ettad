@@ -27,7 +27,7 @@ export class RolePermissionsComponent implements OnInit, OnDestroy {
   selectedRole: RoleDto | null = null;
   permissions: CrudPermission[] = [];
   plainPermissions: string[] = [];
-  
+
   isLoading = false;
   isSaving = false;
   errorMessage = '';
@@ -105,73 +105,96 @@ export class RolePermissionsComponent implements OnInit, OnDestroy {
         }
       });
   }
-
-  createPermissionForm(): void {
+  sanitizeControlName(name: string): string {
+    return name.replace(/[.\s]/g, '_'); // replace dots and spaces with underscores
+  }
+ createPermissionForm(): void {
     const formControls: { [key: string]: any } = {};
 
-    // Add CRUD permissions
+    // CRUD permissions
     this.permissions.forEach(permission => {
+      const baseEntity = this.stripLeadingSegment(permission.entityName);
       permission.permissionsList.forEach(perm => {
-        const controlName = `${permission.entityName}_${perm.displayValue}`;
-        formControls[controlName] = [perm.isChecked || false];
+        const controlName = this.sanitizeControlName(`${baseEntity}_${perm.displayValue}`);
+        formControls[controlName] = [perm.isSelected || false];
       });
     });
 
-    // Add plain permissions
+    // Plain permissions
     this.plainPermissions.forEach(permission => {
-      formControls[`plain_${permission}`] = [true]; // Plain permissions are usually already assigned
+      const controlName = this.sanitizeControlName(`plain_${permission}`);
+      formControls[controlName] = [true]; // or false if not assigned by default
     });
 
     this.permissionForm = this.fb.group(formControls);
   }
+  // strip the first dot-separated segment (e.g. remove leading "Dashboard." from "Dashboard.X.Y")
+  private stripLeadingSegment(entityName: string): string {
+    if (!entityName) return entityName;
+    const parts = entityName.split('.');
+    return parts.length > 1 ? parts.slice(1).join('.') : entityName;
+  }
 
+
+ 
   onPermissionChange(entityName: string, permission: string, checked: boolean): void {
-    const controlName = `${entityName}_${permission}`;
+    const controlName = this.sanitizeControlName(`${this.stripLeadingSegment(entityName)}_${permission}`);
     this.permissionForm.get(controlName)?.setValue(checked);
   }
 
-  onGroupToggle(entityName: string, checked: boolean): void {
-    const entityPermissions = this.permissions.find(p => p.entityName === entityName);
-    if (entityPermissions) {
-      entityPermissions.permissionsList.forEach(perm => {
-        const controlName = `${entityName}_${perm.displayValue}`;
-        this.permissionForm.get(controlName)?.setValue(checked);
-      });
-    }
+ onGroupToggle(entityName: string, selectAll: boolean) {
+    const group = this.permissions.find(p => p.entityName === entityName);
+    if (!group) return;
+
+    const baseEntity = this.stripLeadingSegment(group.entityName);
+
+    group.permissionsList.forEach(perm => {
+      const controlName = this.sanitizeControlName(baseEntity + '_' + perm.displayValue);
+      const control = this.permissionForm.get(controlName);
+      if (control) {
+        control.setValue(selectAll);
+      }
+      // Optional: update your model if needed
+      perm.isSelected = selectAll;
+    });
   }
 
-  isGroupFullySelected(entityName: string): boolean {
-    const entityPermissions = this.permissions.find(p => p.entityName === entityName);
-    if (!entityPermissions) return false;
 
-    return entityPermissions.permissionsList.every(perm => {
-      const controlName = `${entityName}_${perm.displayValue}`;
-      return this.permissionForm.get(controlName)?.value === true;
-    });
+
+  isGroupFullySelected(entityName: string): boolean {
+    const group = this.permissions.find(p => p.entityName === entityName);
+    if (!group) return false;
+    return group.permissionsList.every(p => p.isSelected);
   }
 
   isGroupPartiallySelected(entityName: string): boolean {
     const entityPermissions = this.permissions.find(p => p.entityName === entityName);
     if (!entityPermissions) return false;
 
+    const baseEntity = this.stripLeadingSegment(entityName);
+
     const selectedCount = entityPermissions.permissionsList.filter(perm => {
-      const controlName = `${entityName}_${perm.displayValue}`;
+      const controlName = this.sanitizeControlName(`${baseEntity}_${perm.displayValue}`);
       return this.permissionForm.get(controlName)?.value === true;
     }).length;
 
     return selectedCount > 0 && selectedCount < entityPermissions.permissionsList.length;
   }
 
-  getSelectedPermissionsCount(entityName: string): number {
+ getSelectedPermissionsCount(entityName: string): number {
     const entityPermissions = this.permissions.find(p => p.entityName === entityName);
     if (!entityPermissions) return 0;
 
+    const baseEntity = this.stripLeadingSegment(entityName);
+
     return entityPermissions.permissionsList.filter(perm => {
-      const controlName = `${entityName}_${perm.displayValue}`;
+      const controlName = this.sanitizeControlName(`${baseEntity}_${perm.displayValue}`);
       return this.permissionForm.get(controlName)?.value === true;
     }).length;
   }
 
+
+  
   onSavePermissions(): void {
     if (!this.selectedRole) return;
 
@@ -183,22 +206,30 @@ export class RolePermissionsComponent implements OnInit, OnDestroy {
 
     // Collect CRUD permissions
     this.permissions.forEach(permission => {
+      const baseEntity = this.stripLeadingSegment(permission.entityName);
       permission.permissionsList.forEach(perm => {
-        const controlName = `${permission.entityName}_${perm.displayValue}`;
+        const controlName = this.sanitizeControlName(baseEntity + '_' + perm.displayValue);
+        const control = this.permissionForm.get(controlName);
         if (this.permissionForm.get(controlName)?.value === true) {
-          selectedPermissions.push(perm.displayValue);
-        }
+        // Remove the "Dashboard." or any entityName prefix before "Permissions"
+        const formatted = perm.displayValue.replace(/^.*?(Permissions\.)/, '$1');
+        selectedPermissions.push(formatted);
+      }
       });
     });
 
     // Collect plain permissions
     this.plainPermissions.forEach(permission => {
-      const controlName = `plain_${permission}`;
-      if (this.permissionForm.get(controlName)?.value === true) {
+      const controlName = this.sanitizeControlName(`plain_${permission}`);
+      const control = this.permissionForm.get(controlName);
+      if (control?.value === true) {
         selectedPermissions.push(permission);
       }
     });
 
+    console.log("Selected permissions:", selectedPermissions); // Debug
+
+    // Call backend to assign permissions
     this.backendUserService.assignPermissionsToRole(this.selectedRole.id, selectedPermissions)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
@@ -213,7 +244,6 @@ export class RolePermissionsComponent implements OnInit, OnDestroy {
         }
       });
   }
-
   onRefresh(): void {
     if (this.selectedRole) {
       this.loadRolePermissions(this.selectedRole.id);
