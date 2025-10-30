@@ -1,0 +1,88 @@
+<div class="bg-white min-h-full">
+  <!-- Header -->
+  <div class="flex items-center space-x-3 mb-8">
+    <button 
+      (click)="onBack()"
+      class="text-gray-700 hover:text-gray-900 transition-colors">
+      <lucide-angular [img]="ArrowLeft" class="w-5 h-5"></lucide-angular>
+    </button>
+    <h1 class="text-xl font-semibold text-gray-900">
+      Warehouse Locations Map
+    </h1>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="flex justify-center items-center py-20">
+    <div class="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-600"></div>
+  </div>
+
+  <!-- Content -->
+  <div *ngIf="!loading" class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    <!-- Left Side: Warehouse List -->
+    <div class="lg:col-span-1">
+      <div class="bg-gray-50 rounded-lg p-6">
+        <h2 class="text-sm font-semibold text-gray-700 mb-4">Warehouse</h2>
+        <div class="space-y-2">
+          <div 
+            *ngFor="let warehouse of warehouses"
+            (click)="selectWarehouse(warehouse.id)"
+            [class.bg-white]="selectedWarehouse === warehouse.id"
+            [class.shadow-sm]="selectedWarehouse === warehouse.id"
+            class="px-4 py-3 rounded-md hover:bg-white hover:shadow-sm transition-all cursor-pointer">
+            <p class="text-sm font-medium text-gray-800">{{ warehouse.code }}</p>
+            <p class="text-xs text-gray-500 mt-0.5">{{ warehouse.location }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Side: Map -->
+    <div class="lg:col-span-2">
+      <div class="relative bg-white rounded-lg border border-gray-200 overflow-hidden" style="height: 650px;">
+        <!-- Qatar Map Image -->
+        <img 
+          src="/assets/Group 289206.png" 
+          alt="Qatar Map" 
+          class="absolute inset-0 w-full h-full object-contain">
+        
+        <!-- Warehouse Location Markers -->
+        <div 
+          *ngFor="let warehouse of warehouses"
+          [style.top]="warehouse.mapPosition?.top || '50%'"
+          [style.left]="warehouse.mapPosition?.left || '50%'"
+          class="absolute transform -translate-x-1/2 -translate-y-full cursor-pointer hover:scale-110 transition-transform"
+          (click)="selectWarehouse(warehouse.id)">
+          <!-- Marker Pin -->
+          <div class="relative">
+            <!-- Pin Shape -->
+            <svg 
+              width="40" 
+              height="50" 
+              viewBox="0 0 40 50" 
+              fill="none" 
+              xmlns="http://www.w3.org/2000/svg">
+              <path 
+                d="M20 0C8.954 0 0 8.954 0 20C0 31.667 20 50 20 50C20 50 40 31.667 40 20C40 8.954 31.046 0 20 0Z" 
+                [attr.fill]="warehouse.color === 'green' ? '#10B981' : warehouse.color === 'orange' ? '#F59E0B' : '#EF4444'"
+                [attr.stroke]="selectedWarehouse === warehouse.id ? '#1F2937' : 'white'"
+                stroke-width="3"/>
+              <circle 
+                cx="20" 
+                cy="19" 
+                r="8" 
+                fill="white"/>
+            </svg>
+            <!-- Warehouse Label -->
+            <div 
+              class="absolute top-full mt-1 left-1/2 transform -translate-x-1/2 bg-white px-2 py-1 rounded shadow-md whitespace-nowrap text-xs font-medium text-gray-800 border border-gray-200"
+              [class.ring-2]="selectedWarehouse === warehouse.id"
+              [class.ring-gray-800]="selectedWarehouse === warehouse.id">
+              {{ warehouse.code }}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+

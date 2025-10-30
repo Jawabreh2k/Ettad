@@ -1,0 +1,17 @@
+/* Warehouse Map Component Styles */
+
+:host {
+  display: block;
+  width: 100%;
+}
+
+/* Smooth transitions for markers */
+.transition-transform {
+  transition: transform 0.2s ease-in-out;
+}
+
+/* Map container adjustments */
+.relative img {
+  pointer-events: none;
+}
+

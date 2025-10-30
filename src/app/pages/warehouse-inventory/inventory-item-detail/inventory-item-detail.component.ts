@@ -228,6 +228,10 @@ export class InventoryItemDetailComponent implements OnInit, OnDestroy {
     this.router.navigate(['/warehouse', this.warehouseId, 'inventory']);
   }
 
+  onMapView(): void {
+    this.router.navigate(['/warehouse', this.warehouseId, 'inventory', this.itemId, 'map']);
+  }
+
   formatDate(date: Date): string {
     return date.toLocaleDateString('en-GB', {
       day: 'numeric',

@@ -1,16 +1,14 @@
-<div class="min-h-screen bg-white">
+<div class="bg-white min-h-full">
   <!-- Header -->
-  <div class="bg-[#D4B896] px-8 py-4">
-    <div class="flex items-center space-x-3">
-      <button 
-        (click)="onBack()"
-        class="text-gray-800 hover:text-gray-900 transition-colors">
-        <lucide-angular [img]="ArrowLeft" class="w-5 h-5"></lucide-angular>
-      </button>
-      <h1 class="text-xl font-normal text-gray-900">
-        {{ item?.caliber }}
-      </h1>
-    </div>
+  <div class="flex items-center space-x-3 mb-6">
+    <button 
+      (click)="onBack()"
+      class="text-gray-700 hover:text-gray-900 transition-colors">
+      <lucide-angular [img]="ArrowLeft" class="w-5 h-5"></lucide-angular>
+    </button>
+    <h1 class="text-xl font-medium text-gray-900">
+      {{ item?.caliber || '9x19 mm Ball' }}
+    </h1>
   </div>
 
   <!-- Loading State -->
@@ -19,9 +17,9 @@
   </div>
 
   <!-- Content -->
-  <div *ngIf="!loading && item" class="px-8 py-6">
+  <div *ngIf="!loading && item">
     <!-- Tabs -->
-    <div class="border-b border-gray-300 mb-8">
+    <div class="border-b border-gray-300 mb-10">
       <nav class="flex space-x-8">
         <button
           (click)="setActiveTab('overview')"
@@ -64,75 +62,75 @@
 
     <!-- Overview Tab -->
     <div *ngIf="activeTab === 'overview'">
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-16">
         <!-- Left Column: Details -->
         <div>
-          <h2 class="text-base font-semibold text-gray-800 mb-4">Primary Details</h2>
-          <div class="space-y-3">
+          <h2 class="text-sm font-semibold text-gray-700 mb-6">Primary Details</h2>
+          <div class="space-y-4">
             <div>
-              <p class="text-xs text-gray-500 mb-1">Product name</p>
-              <p class="text-sm text-gray-900">{{ item.caliber }}</p>
+              <p class="text-xs text-gray-500 mb-1.5">Product name</p>
+              <p class="text-sm text-gray-800">{{ item.caliber }}</p>
             </div>
 
             <div>
-              <p class="text-xs text-gray-500 mb-1">Product ID</p>
-              <p class="text-sm text-gray-900">456567</p>
+              <p class="text-xs text-gray-500 mb-1.5">Product ID</p>
+              <p class="text-sm text-gray-800">456567</p>
             </div>
 
             <div>
-              <p class="text-xs text-gray-500 mb-1">NCN</p>
-              <p class="text-sm text-gray-900">{{ item.nature }}</p>
+              <p class="text-xs text-gray-500 mb-1.5">NCN</p>
+              <p class="text-sm text-gray-800">{{ item.nature }}</p>
             </div>
 
             <div>
-              <p class="text-xs text-gray-500 mb-1">Primary Purpose</p>
-              <p class="text-sm text-gray-900">Anti-Personnel</p>
+              <p class="text-xs text-gray-500 mb-1.5">Primary Purpose</p>
+              <p class="text-sm text-gray-800">Anti-Personnel</p>
             </div>
 
             <div>
-              <p class="text-xs text-gray-500 mb-1">Projectile Color</p>
-              <p class="text-sm text-gray-900">No Color - Plain</p>
-            </div>
-          </div>
-
-          <h2 class="text-base font-semibold text-gray-800 mb-4 mt-8">Caliber Specifications</h2>
-          <div class="space-y-3">
-            <div>
-              <p class="text-xs text-gray-500 mb-1">Total Weight</p>
-              <p class="text-sm text-gray-900">11.7 - 0.8 gram</p>
-            </div>
-
-            <div>
-              <p class="text-xs text-gray-500 mb-1">Projectile Material</p>
-              <p class="text-sm text-gray-900">Copper Alloy #220, Lead Antimony Alloy</p>
-            </div>
-
-            <div>
-              <p class="text-xs text-gray-500 mb-1">Case Type</p>
-              <p class="text-sm text-gray-900">Rimless</p>
-            </div>
-
-            <div>
-              <p class="text-xs text-gray-500 mb-1">Primer</p>
-              <p class="text-sm text-gray-900">Non-corrosive Type</p>
-            </div>
-
-            <div>
-              <p class="text-xs text-gray-500 mb-1">Propellant</p>
-              <p class="text-sm text-gray-900">WC-844 (smokeless, Double Base or Equivalent)</p>
+              <p class="text-xs text-gray-500 mb-1.5">Projectile Color</p>
+              <p class="text-sm text-gray-800">No Color - Plain</p>
             </div>
           </div>
 
-          <h2 class="text-base font-semibold text-gray-800 mb-4 mt-8">Classifications</h2>
-          <div class="space-y-3">
+          <h2 class="text-sm font-semibold text-gray-700 mb-6 mt-10">Caliber Specifications</h2>
+          <div class="space-y-4">
             <div>
-              <p class="text-xs text-gray-500 mb-1">Hazard Division</p>
-              <p class="text-sm text-gray-900">1.4 s</p>
+              <p class="text-xs text-gray-500 mb-1.5">Total Weight</p>
+              <p class="text-sm text-gray-800">11.7 - 0.8 gram</p>
             </div>
 
             <div>
-              <p class="text-xs text-gray-500 mb-1">Capability Group</p>
-              <p class="text-sm text-gray-900">G</p>
+              <p class="text-xs text-gray-500 mb-1.5">Projectile Material</p>
+              <p class="text-sm text-gray-800">Copper Alloy #220, Lead Antimony Alloy</p>
+            </div>
+
+            <div>
+              <p class="text-xs text-gray-500 mb-1.5">Case Type</p>
+              <p class="text-sm text-gray-800">Rimless</p>
+            </div>
+
+            <div>
+              <p class="text-xs text-gray-500 mb-1.5">Primer</p>
+              <p class="text-sm text-gray-800">Non-corrosive Type</p>
+            </div>
+
+            <div>
+              <p class="text-xs text-gray-500 mb-1.5">Propellant</p>
+              <p class="text-sm text-gray-800">WC-844 (smokeless, Double Base or Equivalent)</p>
+            </div>
+          </div>
+
+          <h2 class="text-sm font-semibold text-gray-700 mb-6 mt-10">Classifications</h2>
+          <div class="space-y-4">
+            <div>
+              <p class="text-xs text-gray-500 mb-1.5">Hazard Division</p>
+              <p class="text-sm text-gray-800">1.4 s</p>
+            </div>
+
+            <div>
+              <p class="text-xs text-gray-500 mb-1.5">Capability Group</p>
+              <p class="text-sm text-gray-800">G</p>
             </div>
           </div>
         </div>
@@ -141,7 +139,7 @@
         <div class="flex items-start justify-center pt-8">
           <div class="w-full max-w-sm">
             <img 
-              src="/assets/image 8.png" 
+              src="/assets/image 5.png" 
               alt="Ammunition" 
               class="w-full h-auto object-contain">
           </div>
@@ -151,9 +149,9 @@
 
     <!-- Stock Tab -->
     <div *ngIf="activeTab === 'stock'">
-      <div class="flex items-center justify-center mb-8">
+      <div class="flex items-center justify-center mb-10">
         <img 
-          src="/assets/image 8.png" 
+          src="/assets/image 5.png" 
           alt="Ammunition" 
           class="h-40 object-contain">
       </div>
@@ -209,8 +207,10 @@
         </table>
       </div>
 
-      <div class="flex justify-center mt-8">
-        <button class="px-8 py-2.5 bg-[#D4B896] text-gray-800 rounded-md hover:bg-[#C4A886] transition-colors font-normal text-sm">
+      <div class="flex justify-center mt-10">
+        <button 
+          (click)="onMapView()"
+          class="px-10 py-2.5 bg-[#D4B896] text-gray-800 rounded-md hover:bg-[#C4A886] transition-colors font-medium text-sm">
           Map View
         </button>
       </div>
@@ -283,7 +283,7 @@
       </div>
 
       <!-- Pagination -->
-      <div class="flex justify-center items-center space-x-1 mt-8">
+      <div class="flex justify-center items-center space-x-1 mt-10">
         <button 
           (click)="onOrdersPageChange(currentOrdersPage - 1)"
           [disabled]="currentOrdersPage === 1"
@@ -294,11 +294,11 @@
         <button
           *ngFor="let page of getOrdersPageNumbers()"
           (click)="onOrdersPageChange(page)"
-          [class.bg-blue-600]="currentOrdersPage === page"
-          [class.text-white]="currentOrdersPage === page"
+          [class.bg-[#D4B896]]="currentOrdersPage === page"
+          [class.text-gray-900]="currentOrdersPage === page"
           [class.text-gray-700]="currentOrdersPage !== page"
           [class.hover:bg-gray-100]="currentOrdersPage !== page"
-          class="w-8 h-8 rounded flex items-center justify-center text-sm transition-colors">
+          class="w-8 h-8 rounded flex items-center justify-center text-sm transition-colors font-medium">
           {{ page }}
         </button>
 
