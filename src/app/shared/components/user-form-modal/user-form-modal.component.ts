@@ -28,6 +28,8 @@ export class UserFormModalComponent implements OnInit, OnChanges {
 
   userForm!: FormGroup;
   roles: RoleDto[] = [];
+  selectedRoleIds: string[] = [];
+  showRolesDropdown = false;
   isLoading = false;
   errorMessage = '';
 
@@ -46,6 +48,11 @@ export class UserFormModalComponent implements OnInit, OnChanges {
     if (changes['isOpen'] && changes['isOpen'].currentValue) {
       this.initializeForm();
       this.errorMessage = '';
+      if (this.user && this.mode === 'edit') {
+        this.loadUserRoles();
+      } else {
+        this.selectedRoleIds = [];
+      }
     }
     if (changes['user'] || changes['mode']) {
       this.initializeForm();
@@ -55,7 +62,6 @@ export class UserFormModalComponent implements OnInit, OnChanges {
   private initializeForm(): void {
     this.userForm = this.fb.group({
       userName: [this.user?.userName || '', [Validators.required, Validators.minLength(3)]],
-      organizationId: [this.user?.organizationId || 1],
       isLdapUser: [this.user?.isLdapUser || false],
       extraEmployeesView: [this.user?.extraEmployeesView || ''],
       employeeId: [this.user?.employeeId || null]
@@ -70,9 +76,73 @@ export class UserFormModalComponent implements OnInit, OnChanges {
     this.backendUserService.getRoles().subscribe({
       next: (roles: RoleDto[]) => {
         this.roles = roles;
+        
+        // If no roles returned from API, use fallback sample roles for development
+        if (this.roles.length === 0) {
+          this.loadFallbackRoles();
+        }
       },
       error: (error: any) => {
+        console.error('Failed to load roles from API:', error);
         this.errorMessage = 'Failed to load roles';
+        // Load fallback roles on error
+        this.loadFallbackRoles();
+      }
+    });
+  }
+
+  private loadFallbackRoles(): void {
+    // Fallback sample roles for development/testing
+    this.roles = [
+      { 
+        id: '1', 
+        name: 'Administrator', 
+        isDefaultRole: false, 
+        isSuperAdmin: true 
+      },
+      { 
+        id: '2', 
+        name: 'Warehouse Manager', 
+        isDefaultRole: false, 
+        isSuperAdmin: false 
+      },
+      { 
+        id: '3', 
+        name: 'Inventory Clerk', 
+        isDefaultRole: true, 
+        isSuperAdmin: false 
+      },
+      { 
+        id: '4', 
+        name: 'Viewer', 
+        isDefaultRole: false, 
+        isSuperAdmin: false 
+      },
+      { 
+        id: '5', 
+        name: 'Editor', 
+        isDefaultRole: false, 
+        isSuperAdmin: false 
+      },
+      { 
+        id: '6', 
+        name: 'Moderator', 
+        isDefaultRole: false, 
+        isSuperAdmin: false 
+      }
+    ];
+    console.log('Using fallback roles:', this.roles);
+  }
+
+  private loadUserRoles(): void {
+    if (!this.user) return;
+    
+    this.backendUserService.getUserRoles(this.user.id).subscribe({
+      next: (roles: RoleDto[]) => {
+        this.selectedRoleIds = roles.map(r => r.id);
+      },
+      error: (error: any) => {
+        this.errorMessage = 'Failed to load user roles';
       }
     });
   }
@@ -87,17 +157,34 @@ export class UserFormModalComponent implements OnInit, OnChanges {
       return;
     }
 
+    if (this.selectedRoleIds.length === 0) {
+      this.errorMessage = 'Please select at least one role';
+      return;
+    }
+
     this.isLoading = true;
     this.errorMessage = '';
 
     if (this.mode === 'create') {
-      const dto: CreateUserDto = this.userForm.value;
+      const dto: CreateUserDto = {
+        ...this.userForm.value,
+        organizationId: 1 // Default organization ID
+      };
 
       this.backendUserService.createUser(dto).subscribe({
         next: (user: BackendUserDto) => {
-          this.isLoading = false;
-          this.saved.emit();
-          this.close();
+          // After creating user, assign roles
+          this.backendUserService.updateUserRoles(user.id, this.selectedRoleIds).subscribe({
+            next: () => {
+              this.isLoading = false;
+              this.saved.emit();
+              this.close();
+            },
+            error: (error: any) => {
+              this.isLoading = false;
+              this.errorMessage = error.message || 'User created but failed to assign roles';
+            }
+          });
         },
         error: (error: any) => {
           this.isLoading = false;
@@ -107,14 +194,24 @@ export class UserFormModalComponent implements OnInit, OnChanges {
     } else if (this.user) {
       const dto: UpdateUserDto = {
         id: this.user.id,
-        ...this.userForm.value
+        ...this.userForm.value,
+        organizationId: this.user.organizationId
       };
 
       this.backendUserService.updateUser(this.user.id, dto).subscribe({
         next: (user: BackendUserDto) => {
-          this.isLoading = false;
-          this.saved.emit();
-          this.close();
+          // After updating user, update roles
+          this.backendUserService.updateUserRoles(user.id, this.selectedRoleIds).subscribe({
+            next: () => {
+              this.isLoading = false;
+              this.saved.emit();
+              this.close();
+            },
+            error: (error: any) => {
+              this.isLoading = false;
+              this.errorMessage = error.message || 'User updated but failed to update roles';
+            }
+          });
         },
         error: (error: any) => {
           this.isLoading = false;
@@ -124,9 +221,36 @@ export class UserFormModalComponent implements OnInit, OnChanges {
     }
   }
 
+  toggleRolesDropdown(): void {
+    this.showRolesDropdown = !this.showRolesDropdown;
+  }
+
+  toggleRoleSelection(roleId: string): void {
+    const index = this.selectedRoleIds.indexOf(roleId);
+    if (index > -1) {
+      this.selectedRoleIds.splice(index, 1);
+    } else {
+      this.selectedRoleIds.push(roleId);
+    }
+  }
+
+  isRoleSelected(roleId: string): boolean {
+    return this.selectedRoleIds.includes(roleId);
+  }
+
+  getSelectedRolesText(): string {
+    if (this.selectedRoleIds.length === 0) {
+      return 'Select roles';
+    }
+    const selectedRoles = this.roles.filter(r => this.selectedRoleIds.includes(r.id));
+    return selectedRoles.map(r => r.name).join(', ');
+  }
+
   close(): void {
     this.userForm.reset();
     this.errorMessage = '';
+    this.selectedRoleIds = [];
+    this.showRolesDropdown = false;
     this.closed.emit();
   }
 
