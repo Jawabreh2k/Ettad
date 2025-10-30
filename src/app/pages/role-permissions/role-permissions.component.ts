@@ -193,16 +193,19 @@ isGroupPartiallySelected(entityName: string): boolean {
 }
 
   getSelectedPermissionsCount(entityName: string): number {
-    const entityPermissions = this.permissions.find(p => p.entityName === entityName);
-    if (!entityPermissions) return 0;
+  const entityPermissions = this.permissions.find(p => p.entityName === entityName);
+  if (!entityPermissions) return 0;
 
-    const baseEntity = this.stripLeadingSegment(entityName);
+  // Strip leading segment (if needed)
+  const baseEntity = this.stripLeadingSegment(entityName);
 
-    return entityPermissions.permissionsList.filter(perm => {
-      const controlName = this.sanitizeControlName(`${baseEntity}_${perm.displayValue}`);
-      return this.permissionForm.get(controlName)?.value === true;
-    }).length;
-  }
+  return entityPermissions.permissionsList.filter(perm => {
+    // Use the same sanitized control name as in createPermissionForm
+    const controlName = this.sanitizeControlName(`${perm.displayValue}`);
+    return this.permissionForm.get(controlName)?.value === true;
+  }).length;
+}
+
 
 
 
