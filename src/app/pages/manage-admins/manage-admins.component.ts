@@ -37,6 +37,7 @@ export class ManageAdminsComponent implements OnInit, OnDestroy {
 
   users: BackendUserDto[] = [];
   roles: RoleDto[] = [];
+  userRolesMap: Map<string, string[]> = new Map(); // Cache user roles
   isLoading = false;
   errorMessage = '';
   
@@ -77,12 +78,30 @@ export class ManageAdminsComponent implements OnInit, OnDestroy {
       next: (users) => {
         this.users = users;
         this.isLoading = false;
+        // Load roles for each user
+        users.forEach(user => this.loadUserRolesData(user.id));
       },
       error: (error) => {
         this.isLoading = false;
         this.errorMessage = 'Failed to load users: ' + (error.message || 'Unknown error');
       }
     });
+  }
+
+  private loadUserRolesData(userId: string): void {
+    this.backendUserService.getUserRoles(userId).subscribe({
+      next: (roles) => {
+        this.userRolesMap.set(userId, roles.map(r => r.name));
+      },
+      error: (error) => {
+        console.error(`Failed to load roles for user ${userId}:`, error);
+        this.userRolesMap.set(userId, []);
+      }
+    });
+  }
+
+  getUserRoles(userId: string): string[] {
+    return this.userRolesMap.get(userId) || [];
   }
 
   loadRoles(): void {
@@ -149,6 +168,7 @@ export class ManageAdminsComponent implements OnInit, OnDestroy {
 
   onUserSaved(): void {
     this.loadUsers();
+    this.userRolesMap.clear(); // Clear cache to reload roles
   }
 
   formatDate(date: Date | undefined): string {
