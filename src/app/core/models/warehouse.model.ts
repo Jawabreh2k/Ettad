@@ -43,3 +43,18 @@ export interface UpdateWarehouseDto {
   totalCapacity?: number;
   isActive?: boolean;
 }
+
+export interface WarehouseLocationDto {
+  id: string;
+  name: string;
+  code: string;
+  location: string;
+  latitude?: number;
+  longitude?: number;
+  mapPosition?: {
+    top: string;
+    left: string;
+  };
+  color: 'green' | 'orange' | 'red';
+  isActive: boolean;
+}

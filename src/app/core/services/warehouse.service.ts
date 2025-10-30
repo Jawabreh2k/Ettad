@@ -8,7 +8,8 @@ import {
   WarehouseDto, 
   WarehouseSummaryDto, 
   CreateWarehouseDto, 
-  UpdateWarehouseDto
+  UpdateWarehouseDto,
+  WarehouseLocationDto
 } from '@models/warehouse.model';
 import {
   WarehouseInventoryItem,
@@ -285,6 +286,32 @@ export class WarehouseService {
         this.configService.logError('Failed to fetch warehouse inventory', error);
         return throwError(() => new Error(
           error.userMessage || 'Failed to fetch warehouse inventory'
+        ));
+      })
+    );
+  }
+
+  // ==================== WAREHOUSE LOCATIONS ====================
+
+  /**
+   * Get warehouse locations for map display
+   */
+  getWarehouseLocations(): Observable<WarehouseLocationDto[]> {
+    this.configService.log('Fetching warehouse locations');
+
+    return this.apiService.getWithAuth<ApiResponse<WarehouseLocationDto[]>>(
+      API_ENDPOINTS.WAREHOUSES.BASE + '/locations'
+    ).pipe(
+      map(response => {
+        if (!response.succeeded) {
+          throw new Error(response.message || 'Failed to fetch warehouse locations');
+        }
+        return response.data || [];
+      }),
+      catchError(error => {
+        this.configService.logError('Failed to fetch warehouse locations', error);
+        return throwError(() => new Error(
+          error.userMessage || 'Failed to fetch warehouse locations'
         ));
       })
     );
